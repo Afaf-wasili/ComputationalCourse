@@ -1,6 +1,3 @@
-#include <math.h>  
-
-
 '''
 if condition:
    statement
@@ -8,18 +5,16 @@ if condition:
    etc.
 If the condition is true, statement is executed; otherwise it is skipped
 '''
-
 '''
 #Example:
 number = int(input("Enter a number:"))
 
 if number < 0:
-    number =   - number
-    
-print("The absolute value of number is", number) 
+   print("The negative number is", number) 
+if number > 0:
+   print("The positive number is", number)    
+
 '''
-
-
 
 '''
 if else statement:
@@ -33,10 +28,10 @@ else:
 The given condition is evaluated first. If the condition is true, statement1 is executed. If the condition is false, statement 2 is executed.
 '''
 
-'''
+
 #Example:
 # This program test a number is even or odd.
-
+'''
 number = int(input('Enter number: '))
 
 result  = (number%2)
@@ -45,8 +40,8 @@ if number%2 ==0:  #num % 2 will equal 0 if num is even and 1 if number is odd. D
     print(result,"=result",number, ':is even.')
 else:
     print(result,"=result", number, ':is odd.')
-'''
 
+'''
 '''
 #When there are more than two possibilities and we need more than two branches, if-elif-else statement is used. Here is the general format of the if-elif-else statement:
 
@@ -64,13 +59,16 @@ else:
    etc.
 elif is an abbreviation of "else if." Again, exactly one branch will be executed. There is no limit of the number of elif statements, but the last branch has to be an else statement.
 '''
-'''
+
 #Example:
 
 # This program determines greater number.
 
-x = int(input("Enter first number x:"))
-y = int(input("Enter second number y:"))
+#x = int(input("Enter first number x:"))
+#y = int(input("Enter second number y:"))
+'''
+x = 2
+y = 3
 
 if x < y:
     print (x, "is less than", y)
@@ -81,21 +79,22 @@ else:
 '''    
 
 
-'''
+
 
 #Nested Decision Structures: One conditional can also be nested within another. We could have written the above example as follows:
 
 #Example:
 # This program determines greater number.
 
-x = int(input("Enter first number x:"))
-y = int(input("Enter second number y:"))
-
+#x = int(input("Enter first number x:"))
+#y = int(input("Enter second number y:"))
+x = 2
+y = 3
 if x == y:
     print (x, "and", y, "are equal")
 else:
+#    print ("otherwise")
     if x < y:
         print (x, "is less than", y)
-    else:
+    else :
         print (x, "is greater than", y)
-'''

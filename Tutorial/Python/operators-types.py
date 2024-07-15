@@ -62,9 +62,8 @@ not	Reverse the result, returns False if the result is true	not(x < 5 and x < 10
 '''
 x = 3
 y = 5
-average = (x + y)/2 
-print(average)
-
+average = (x+y)/2 
+print('average=',average)
 '''
 #Logical errors
 '''

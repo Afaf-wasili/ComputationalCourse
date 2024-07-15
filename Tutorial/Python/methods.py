@@ -62,9 +62,10 @@ print(x)
 '''
 '''
 #n = list(range(10))
-#n  = range(10)
+n  = range(10)
 print(n)
 '''
+
 a = np.arange(10)
 #a = np.arange(3,8)
 #a = np.arange(1,10,2)

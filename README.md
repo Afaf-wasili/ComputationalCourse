@@ -116,3 +116,38 @@ Then, the statement in Line 2 assigns a different value, 5, to the amount variab
 
 The old value, 10, is still in the computer’s memory, but it can no longer be used because it isn’t referenced by a variable. When a value in memory is no longer referenced by a variable, the Python interpreter automatically removes it from memory. This process is known as garbage collection.
 # ComputationalCourse
+
+
+
+
+math module
+This module provides access to the mathematical functions. All return values of mathematical functions are floats. The Math Library not only has functions but also useful constants like π and e. To use the functions or the constants in your program you must apply the dot operator. The general syntax for usage is math.function() or math.constant.
+
+Some of the functions and constants of math modules are:
+
+math.sqrt(x)	Return the square root of x.
+math.ceil(x)	Return the ceiling of x, the smallest integer greater than or equal to x.
+math.floor(x)	Return the floor of x, the largest integer less than or equal to x.
+math.pow(x,y)	Return x raised to the power y. Unlike the built-in ** operator, math.pow() converts both its arguments to type float. Use ** or the built-in pow() function for computing exact integer powers.
+math.fabs(x)	Return the absolute value of x.
+math.radians(x)	Return the radians of x degree.
+math.sin(x)	Return the sine of x radians.
+math.cos(x)	Return the cosine of x radians.
+math.tan(x)	Return the tangent of x radians.
+math.pi	The mathematical constant π = 3.141592….
+math.e	The mathematical constant e = 2.718281…
+
+
+
+
+
+
+
+
+
+statistics module
+This module provides functions for calculating mathematical statistics of numeric (Real-valued) data.
+
+statistics.mean(data)	Return the sample arithmetic mean of data which can be a sequence or iterable.
+statistics.median(data)	Return the median (middle value) of numeric data, using the common "mean of middle two" method.
+statistics.mode(data)	Return the single most common data point from discrete or nominal data.

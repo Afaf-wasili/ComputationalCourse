@@ -2,26 +2,27 @@
 There are three logical operators in Python.
 The "and" operator is used to combine two or more conditions. It returns True if all the conditions are true. Otherwise, it returns False
 '''
-
 '''
 #Example: Checking Age and Salary for Loan Eligibility
 age = 25
 salary = 50000
 
-if age >= 18 and salary >= 30000:
+if age >= 26 and salary >= 30000:
     print("You are eligible for a loan.")
 else:
     print("You are not eligible for a loan.")
-
 '''
 
+
 '''
-Example 3: Checking if a User Entered a Valid Username and Password
+#Example: Checking if a User Entered a Valid Username and Password
 
 username = "admin"
 password = "pass123"
-if username == "admin" and password == "pass123":
+if username == "admin" and password == "Pass123":
     print("Login successful!")
+else:
+    print("Invalied login!")
 '''
 '''
 #Example: Checking if a Number is both Positive and Even
@@ -49,10 +50,11 @@ if subject1 >= 50 or subject2 >= 50:
 else:
     print("The student has failed in all subjects.")
 '''
-
+'''
 #Example: Checking if a Number is Either Divisible by 2 or 5
 num = 17  #test 16 
 if num % 2 == 0 or num % 5 == 0:
     print("The number is divisible by either 2 or 5.")
 else:
     print("The number is not divisible by 2 or 5.")
+'''

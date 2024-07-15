@@ -24,21 +24,23 @@ outfile = open('oceans.txt', 'a') #'a' For Append
 outfile.write('Southern\n')
 outfile.close()
 '''
-
+'''
 #Reading Data From a File
 infile = open('oceans.txt', 'r')
 data = infile.read()
 print(data)
 infile.close()
+'''
 
+#Reading Data From a File with specific element
 
-#Reading Data From a File with specific element                                                                                                                                                              
+                     
 infile = open('oceans.txt', 'r')
-data = infile.read(4)
+data = infile.read()
 print(data)
 infile.close()
 
-
+'''
 #Reading File Using readline(), line by line with extra space b/w elements
 infile = open('oceans.txt', 'r')
 line1 = infile.readline()
@@ -48,8 +50,8 @@ print(line1)
 print(line2)
 print(line3)
 infile.close()
-
-
+'''
+'''
 #Reading File Using readline(), line by line with lessspace b/w elements             
 infile = open('oceans.txt', 'r')
 line1 = infile.readline().rstrip('\n')
@@ -59,10 +61,8 @@ print(line1)
 print(line2)
 print(line3)
 infile.close()
-
-
-
-
+'''
+'''
 #for Loop to Read All Lines from the file
 file = open('oceans.txt', 'r')
 
@@ -71,3 +71,4 @@ for line in file:
     print(line)
 
 file.close()
+'''

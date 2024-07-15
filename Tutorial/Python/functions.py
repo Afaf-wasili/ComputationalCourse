@@ -10,30 +10,43 @@ len(num)
 sum(num)
 max(num)
 min(num)
-print(len(num))
-print(sum(num))
-print(max(num))
-print(min(num))
+print('len(num):',len(num))
+print('sum(num):',sum(num))
+print('max(num):',max(num))
+print('min(num):',min(num))
 '''
 '''
 def message():
     print("Hello world!")
 
 message()
+
+
 '''
-'''
+
 def carea(radius):
-    area = 3.14*radius*radius
+    area = 3.14**radius
     print('Area of circle is', area)
 #here a is same is radius, radius=5, we can define a = 5 and do carea(a)
 a = 5
-carea(a)
-'''
+carea(5)
 
-def simple_interest(principle = 1200, rate = 8, time = 1):
+'''
+def simple_interest(principle, rate = 8, time = 1):
 
     si = principle * rate * time / 100
     print(si)
 
-simple_interest()
+simple_interest(principle=1200)
 #simple_interest(principle=1200) # this is correct is principle does not have a value in the function
+'''
+
+def simple_interest():
+    principle = 1200
+    rate = 8
+    time =1
+
+    si = (principle * rate * time) / 100
+
+#print(si)
+simple_interest()

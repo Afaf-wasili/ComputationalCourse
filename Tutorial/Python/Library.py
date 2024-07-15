@@ -48,6 +48,6 @@ for i in list(n):
 print(i)
 '''
 a = np.array([10,20,30])
-b = np.array([1,2,3])
+b = np.array([1,2,0])
 c = a + b
 print(c)
