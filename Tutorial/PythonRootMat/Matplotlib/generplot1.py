@@ -25,5 +25,5 @@ ax.legend()
 ax.set_title("A figure with multiple lines")
 #Grid
 ax.grid()
-#plt.show()
-plt.savefig("Plots/logcossin.png")
+plt.show()
+#plt.savefig("Plots/logcossin.png")

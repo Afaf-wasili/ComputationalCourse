@@ -15,5 +15,5 @@ plt.grid()  # Add grid
 plt.legend()    # Add legend
 
 # Display plot
-#plt.show()
-plt.savefig("Plots/XY.png")
+plt.show()
+#plt.savefig("Plots/XY.png")

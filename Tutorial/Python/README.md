@@ -14,16 +14,16 @@ The break and continue statement: Done
 Functions: Done
 
 
-Methods
+Methods: Done
 
 
-Python library
+Python library: Done
 
 
-Value Returning Functions
+Value Returning Functions: Done
 
-Data File handling
+Data File handling: Done
 
-numpy
+numpy: Done
 
 
