@@ -58,9 +58,9 @@ pwd
 
 %comment out many lines in python or c++
 
-''''
+'''
 
-''''
+'''
 
 
 
@@ -69,3 +69,6 @@ pwd
 
 
 
+%comment out line in fortran
+
+!
