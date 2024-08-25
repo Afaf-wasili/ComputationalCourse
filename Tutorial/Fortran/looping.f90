@@ -10,7 +10,7 @@ program check_even_odd
     integer :: i
 
     ! Loop through the array with a step of 3
-    do i = 1, 8, 3
+    do i = 1, 8, 1
         if (mod(n(i), 2) == 0) then
             sum_even = sum_even + n(i)
             count_even = count_even + 1

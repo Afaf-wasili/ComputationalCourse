@@ -1,4 +1,4 @@
-program sum_two_numbers
+program sumtwo
     ! Declare that all variables must be explicitly defined
     implicit none
 
@@ -15,4 +15,4 @@ program sum_two_numbers
     ! Print the result of the addition
     print *, 'The sum of', a, 'and', b, 'is', sum
 
-end program sum_two_numbers
+end program sumtwo
