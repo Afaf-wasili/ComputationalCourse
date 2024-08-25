@@ -1,0 +1,1 @@
+Abs[NIntegrate[F1, {phip, 0, 2*Pi}] - NIntegrate[F2, {phip, 0, 2*Pi}] + 2*NIntegrate[Ruqayyah, {rho, rho1, rho2}]]^2*Sin[theta]^2
