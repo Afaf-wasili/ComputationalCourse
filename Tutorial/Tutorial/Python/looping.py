@@ -92,26 +92,10 @@ sum_even=0
 sum_odd=0
 count_even=0
 count_odd=0
-for i in range(0,8,1
-n = [1,2,3,4,5,6,7,8]
-sum_even=0
-sum_odd=0
-count_even=0
-count_odd=0
-for i in range(0,8,1):
+for i in range(0,8,3):
     if n[i] % 2 == 0:
-       sum_even += n[i]
-       count_even += 1
-    else:
-      sum_odd += n[i]
-      count_odd += 1
-
-print("the total number of even:",sum_even)
-print("how many even number:",count_even)
-print("the total number of odd:",sum_odd)
-print("how many odd number:",):
-    if n[i] % 2 == 0:
-       sum_even += n[i]
+       #sum_even += n[i]
+       sum_even = sum_even + n[i]
        count_even += 1
     else:
       sum_odd += n[i]

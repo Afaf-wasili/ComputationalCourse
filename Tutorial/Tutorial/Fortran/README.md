@@ -1,0 +1,1 @@
+compliing/running:   gfortran -o hello hello.f90 && ./hello

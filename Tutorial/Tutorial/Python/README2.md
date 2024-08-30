@@ -60,6 +60,12 @@ math.e  The mathematical constant e = 2.718281…
 
 
 
+
+
+
+
+
+
 statistics module
 This module provides functions for calculating mathematical statistics of numeric (Real-valued) data.
 
