@@ -2,7 +2,7 @@
 There are three logical operators in Python.
 The "and" operator is used to combine two or more conditions. It returns True if all the conditions are true. Otherwise, it returns False
 '''
-'''
+
 #Example: Checking Age and Salary for Loan Eligibility
 age = 25
 salary = 50000
@@ -11,7 +11,7 @@ if age >= 26 and salary >= 30000:
     print("You are eligible for a loan.")
 else:
     print("You are not eligible for a loan.")
-'''
+
 
 
 '''
