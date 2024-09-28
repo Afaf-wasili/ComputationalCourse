@@ -2,8 +2,6 @@
 
 
 
-
-
 #Arithmetic Operator:
 '''
 Operator	Name	Example
@@ -55,24 +53,24 @@ not	Reverse the result, returns False if the result is true	not(x < 5 and x < 10
 
 
 
-
-
 #Algebraic Expression to Python Statement
 #Exerise: Evaluate the Following statement.
 '''
 x = 3
 y = 5
-average = (x+y)/2 
+average = x+y/2 
 print('average=',average)
 '''
-#Logical errors
-'''
+
+#to get more accurate results, () must be involved
 x = 3
 y = 5
-average = x + y/2 
-print(average)
+average = ( x + y ) / 2 
+print(average)                                                                                                           
+
+
 '''
-
-
+#Logical errors
 day = "Sunday"
-print(day)
+print(day) 
+'''

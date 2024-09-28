@@ -9,14 +9,17 @@ File Mode	Description
 'a'	Opens the file in append mode. If the file doesn’t exist, then a new file will be created.
 'a+'	Opens the file in append and read mode. If the file doesn’t exist, then it will create a new file.
 '''
+
 '''
 #Writing Data to a Text File
-outfile = open(r'oceans.txt', 'w')
+outfile = open('oceans.txt', 'w')
+#outfile = open("/Users/afafwasili/ComputationalMC/Tutorial/Python/Outputtxt/oceans.txt", "w")    
 outfile.write('Atlantic\n')
 outfile.write('Pacific\n')
 outfile.write('Indian\n')
 outfile.write('Arctic\n')
-outfile.close()
+outfile.close() #closing .txt file
+
 '''
 '''
 #Append Data to a File, adding element
@@ -24,14 +27,17 @@ outfile = open('oceans.txt', 'a') #'a' For Append
 outfile.write('Southern\n')
 outfile.close()
 '''
+
 '''
 #Reading Data From a File
-infile = open('oceans.txt', 'r')
-data = infile.read()
-print(data)
+infile = open("oceans.txt", "r")
+#data = infile.read()
+#print(data)
+print(infile.read())
 infile.close()
 '''
 
+'''
 #Reading Data From a File with specific element
 
                      
@@ -41,6 +47,8 @@ print(data)
 infile.close()
 
 '''
+'''
+
 #Reading File Using readline(), line by line with extra space b/w elements
 infile = open('oceans.txt', 'r')
 line1 = infile.readline()
@@ -51,7 +59,9 @@ print(line2)
 print(line3)
 infile.close()
 '''
+
 '''
+
 #Reading File Using readline(), line by line with lessspace b/w elements             
 infile = open('oceans.txt', 'r')
 line1 = infile.readline().rstrip('\n')
@@ -61,14 +71,15 @@ print(line1)
 print(line2)
 print(line3)
 infile.close()
+
 '''
-'''
+
+
 #for Loop to Read All Lines from the file
 file = open('oceans.txt', 'r')
 
-for line in file:
-    line = line.rstrip()
-    print(line)
+for i in file:
+    i = i.rstrip()
+    print(i)
 
 file.close()
-'''

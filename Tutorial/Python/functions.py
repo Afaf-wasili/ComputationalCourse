@@ -1,52 +1,48 @@
+import numpy as np 
 '''
-len():The function len returns the length of a list.
-sum():Returns the sum of a list.
-max():Returns the largest item in a list.
-min():Returns the smallest item in a list.
-'''
-'''
-num = [10,4,90]
-len(num)
-sum(num)
-max(num)
-min(num)
-print('len(num):',len(num))
-print('sum(num):',sum(num))
-print('max(num):',max(num))
-print('min(num):',min(num))
-'''
-'''
-def message():
+#Example: Function to print a string
+def Hello():
     print("Hello world!")
-
-message()
-
-
+#calling and closing
+Hello()
 '''
 
-def carea(radius):
+'''
+#Example:
+def carea():
+    radius = 5
     area = 3.14**radius
     print('Area of circle is', area)
 #here a is same is radius, radius=5, we can define a = 5 and do carea(a)
-a = 5
+carea()
+'''
+'''
+def carea(radius):
+    area = np.pi ** radius
+    print('Area of circle is', area)
 carea(5)
 
 '''
-def simple_interest(principle, rate = 8, time = 1):
-
+'''
+#Example:
+def simple_interest(principle=1200, rate = 8, time = 1):
+    
     si = principle * rate * time / 100
-    print(si)
+    print('si:',si)
 
-simple_interest(principle=1200)
-#simple_interest(principle=1200) # this is correct is principle does not have a value in the function
+simple_interest()
 '''
 
+
+
+
+#Example: same for the above with different style
 def simple_interest():
     principle = 1200
     rate = 8
     time =1
-
+    
     si = (principle * rate * time) / 100
-
-#print(si)
+#    print("output:",(principle * rate * time) / 100)
+#calling and closing otherwise not result will be priniting
 simple_interest()

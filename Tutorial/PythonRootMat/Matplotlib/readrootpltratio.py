@@ -18,7 +18,7 @@ mc_edges = mc_hist.axis().edges()
 mc_values = mc_hist.values()
 
 # Calculate ratio
-ratio = np.divide(data_values, mc_values, where=mc_values != 0)
+ratio = np.divide(data_values, mc_values)
 
 # Plot histograms and ratio plot
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 14), sharex=True)
@@ -26,7 +26,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 14), sharex=True)
 ax1.step(data_edges[:-1], data_values, where='mid', color='blue', label='Data')
 ax1.step(mc_edges[:-1], mc_values, where='mid', color='red', label='MC')
 ax1.set_ylabel('Counts')
-ax1.set_title('Histograms from ROOT File')
+ax1.set_title('Histograms ')
 ax1.legend()
 ax1.grid(True)
 

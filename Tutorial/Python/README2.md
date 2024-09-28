@@ -21,10 +21,10 @@ There are some reserved words in Python which have predefined meaning called key
 and     del     from    not     while
 as      elif    global  or      with
 assert  else    if      pass    yield
-break   except  import  print
-class   exec    in      raise
+break   except  import  print   
+class   exec    in      raise   open
 continue        finally is      return
-def     for     lambda  try
+def     for     lambda  try     range 
 
 
 
@@ -57,12 +57,6 @@ math.cos(x)     Return the cosine of x radians.
 math.tan(x)     Return the tangent of x radians.
 math.pi The mathematical constant π = 3.141592….
 math.e  The mathematical constant e = 2.718281…
-
-
-
-
-
-
 
 
 
