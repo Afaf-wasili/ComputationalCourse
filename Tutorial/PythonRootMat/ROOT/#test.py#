@@ -1,0 +1,77 @@
+import ROOT
+from array import array
+import numpy as np
+
+# Create some example linear data
+n_points = 100
+x_values = np.linspace(0, 10, n_points)
+y_values = 2.5 * x_values + 1.0 + np.random.normal(0, 1, n_points)  # y = 2.5x + 1 + noise
+
+# Create a TGraph from the data
+graph = ROOT.TGraph(n_points, array('d', x_values), array('d', y_values))
+
+# Set up the canvas
+canvas = ROOT.TCanvas("canvas", "Linear Fit with Confidence Limits", 800, 600)
+canvas.SetMargin(0.15, 0.05, 0.15, 0.1)
+
+# Draw the data
+graph.SetMarkerStyle(20)
+graph.SetMarkerColor(ROOT.kBlue)
+graph.Draw("AP")
+
+# Fit a line to the data
+fit_function = ROOT.TF1("fit", "pol1", 0, 10)  # Linear fit
+graph.Fit(fit_function, "S")
+
+# Get fit parameters and their errors
+slope = fit_function.GetParameter(1)
+intercept = fit_function.GetParameter(0)
+slope_error = fit_function.GetParError(1)
+intercept_error = fit_function.GetParError(0)
+
+# Calculate confidence limits (68% CL)
+x_min = 0
+x_max = 10
+y_fit_low = []
+y_fit_high = []
+
+for x in x_values:
+    y_fit_low.append((intercept - intercept_error) + (slope - slope_error) * x)
+    y_fit_high.append((intercept + intercept_error) + (slope + slope_error) * x)
+
+# Create TGraphs for confidence limits
+cl_low = ROOT.TGraph(n_points, array('d', x_values), array('d', y_fit_low))
+cl_high = ROOT.TGraph(n_points, array('d', x_values), array('d', y_fit_high))
+
+# Set colors for the confidence limit graphs
+cl_low.SetFillColor(ROOT.kRed)
+cl_high.SetFillColor(ROOT.kGreen)
+
+# Draw the confidence limits as filled areas
+cl_low.SetLineColor(0)  # No border for fill
+cl_high.SetLineColor(0)  # No border for fill
+cl_low.Draw("F SAME")
+cl_high.Draw("F SAME")
+
+# Draw the fitted line
+fit_function.SetLineColor(ROOT.kMagenta)
+fit_function.Draw("SAME")
+
+# Add labels and titles
+graph.GetXaxis().SetTitle("X")
+graph.GetYaxis().SetTitle("Y")
+canvas.Update()
+
+# Create a legend
+legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.9)
+legend.AddEntry(graph, "Data", "p")
+legend.AddEntry(fit_function, "Linear Fit", "l")
+legend.AddEntry(cl_low, "68% CL", "f")
+legend.Draw()
+
+# Save the canvas as an image
+canvas.SaveAs("Plots/Linear_Fit_with_68CL.png")
+
+# Close the canvas
+canvas.Close()
+rm 

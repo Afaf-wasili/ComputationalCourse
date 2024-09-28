@@ -3,7 +3,10 @@ There are three logical operators in Python.
 The "and" operator is used to combine two or more conditions. It returns True if all the conditions are true. Otherwise, it returns False
 '''
 
+<<<<<<<< HEAD:Tutorial/Python/Logical-Operators.py
 '''
+========
+>>>>>>>> e81fefab9d5bec8c1f5d1a05cb5f1015ba47b505:Tutorial/Python/Logical-operators.pyls
 #Example: Checking Age and Salary for Loan Eligibility
 age = 25
 salary = 50000
@@ -13,7 +16,10 @@ if age > 25 or salary >= 30000:  # using and both variables must be correct othe
 else:
     print("You are not eligible for a loan.")
 
+<<<<<<<< HEAD:Tutorial/Python/Logical-Operators.py
 '''
+========
+>>>>>>>> e81fefab9d5bec8c1f5d1a05cb5f1015ba47b505:Tutorial/Python/Logical-operators.pyls
 
 '''
 # same example above but using if and else instead of adding logical operator

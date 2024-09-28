@@ -1,0 +1,21 @@
+void createR`zmv ootFile() {
+    const int nEvents = 1000;
+    const double massPion = 0.13957, massKaon = 0.49367;
+    std::vector<double> masses;
+
+    // Generate random masses
+    for (int i = 0; i < nEvents; ++i) {
+        masses.push_back(gRandom->Uniform() < 0.5 ? massPion : massKaon);
+    }
+
+    // Create a ROOT file and histogram
+    TFile file("sorted_mass.root", "RECREATE");
+    TH1F hist("massHist", "Mass Distribution; Mass (GeV/c^2); Events", 50, 0, 1);
+
+    // Fill histogram
+    for (double mass : masses) hist.Fill(mass);
+    hist.Write();
+    file.Close();
+    
+    std::cout << "ROOT file 'sorted_mass.root' created with sorted mass data." << std::endl;
+}
