@@ -1,14 +1,17 @@
 import math
 import statistics
 import numpy as np
-'''                                                                                                                                                                                      
+
+'''
+#Example:
+
 x1, y1 = (2,3)                                                                                                                                                                           
 x2, y2 =  (0,0)                                                                                                                                                                          
 d = math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))                                                                                                                           
-print('The distance between A and B is', d)                                                                                                                                              
-'''
+print('The distance between A and B is', d)                                                              '''                                                                                
 
-'''                                                                                                                                                                                      
+
+''''                                                                                                     #Example:                                                                             
 angle_degrees = 45                                                                                                                                                                       
 angle_radians = math.radians(angle_degrees)                                                                                                                                              
                                                                                                                                                                                          
@@ -21,12 +24,13 @@ print("Sine:", sin_value)
 print("Cosine:", cos_value)                                                                                                                                                              
 print("Tangent:", tan_value)
 
+
+
 '''
 
 '''
-
-
-data = (21, 3, 7, 17, 35, 31, 46, 7, 43)
+#Example:
+data = [21, 3, 7, 17, 35, 31, 46, 7, 43]
 
 a = statistics.mean(data)
 b = statistics.median(data)
@@ -37,17 +41,18 @@ print('median =', b)
 print('mode =', c)
 '''
 '''
-n = math.sqrt(10)
+#Example:
+n = np.sqrt(10)
+#n = 10**0.5
 print('Cube =', n)
+'''
 
 '''
-'''
-n = [1,2,3,4,5]
-for i in list(n):
-    i += 2
-print(i)
-'''
+#Example:
+
 a = np.array([10,20,30])
 b = np.array([1,2,0])
 c = a + b
 print(c)
+'''
+

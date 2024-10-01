@@ -71,4 +71,18 @@ pwd
 
 %comment out line in fortran
 
+<<<<<<< HEAD
 !
+=======
+<<<<<<< HEAD
+!
+
+
+%how to open plot saving with .png, .pdf, etc
+
+eog ....
+xdg-open ....
+=======
+!
+>>>>>>> e81fefab9d5bec8c1f5d1a05cb5f1015ba47b505
+>>>>>>> new-feature-branch

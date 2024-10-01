@@ -1,13 +1,13 @@
-import uproot
 import numpy as np
 import matplotlib.pyplot as plt
+import uproot
 from scipy.optimize import curve_fit
 
 # Define the Gaussian function
 def gaussian(x, a, mu, sigma):
-    return a * np.exp(-(x - mu)**2 / (2 * sigma**2))
+    return a * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
 
-file_path = "Plots/histo.root"
+file_path = "histo.root"
 
 # Open the ROOT file
 file = uproot.open(file_path)
@@ -22,22 +22,24 @@ data_centers = (data_edges[:-1] + data_edges[1:]) / 2
 
 # Initial parameter estimates
 initial_amplitude = max(data_values)
-initial_mu = data_centers[np.argmax(data_values)]
-initial_sigma = np.std(data_values)
+initial_mu = data_centers[np.argmax(data_values)] # max value in y-axis
+initial_sigma = np.std(data_centers)
 
-# Fit the data using the Gaussian function
+# Fit the Gaussian to the data
 popt, pcov = curve_fit(gaussian, data_centers, data_values, p0=[initial_amplitude, initial_mu, initial_sigma])
 
-# Extract fit parameters
-amplitude, mu, sigma = popt
+# Extract errors for mean and sigma from covariance matrix
+mu_error = np.sqrt(pcov[1][1])
+sigma_error = np.sqrt(pcov[2][2])
 
-# Calculate the standard deviation errors
-perr = np.sqrt(np.diag(pcov))
+# Generate x_fit using the specified range
+x_fit = np.linspace(data_edges[0], data_edges[-1], 1000)
+y_fit = gaussian(x_fit, *popt)
 
 # Plot the data histogram and the Gaussian fit
 plt.figure(figsize=(10, 7))
 plt.step(data_centers, data_values, where='mid', color='blue', label='Data')
-plt.plot(data_centers, gaussian(data_centers, *popt), 'r-', label=f'Fit: $\mu={mu:.2f} \pm {perr[1]:.2f}$, $\sigma={sigma:.2f} \pm {perr[2]:.2f}$')
+plt.plot(x_fit, y_fit, 'r-', label=f'Fit: $\mu={popt[1]:.2f} \pm {mu_error:.2f}$, $\sigma={popt[2]:.2f} \pm {sigma_error:.2f}$')
 plt.xlabel('X axis')
 plt.ylabel('Counts')
 plt.title('Data Histogram and Gaussian Fit')

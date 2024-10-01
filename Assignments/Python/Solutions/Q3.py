@@ -1,0 +1,28 @@
+import math
+
+# Function to calculate the area of a circle
+def circle_area(radius):
+    return math.pi * radius ** 2
+
+# Function to calculate the volume of a sphere
+def sphere_volume(radius):
+    return (4/3) * math.pi * radius ** 3
+
+# Main script
+def main():
+    # Prompting user for radius of the circle
+    circle_radius = float(input("Enter the radius of the circle: "))
+    # Calculating area
+    area = circle_area(circle_radius)
+    
+    # Prompting user for radius of the sphere
+    sphere_radius = float(input("Enter the radius of the sphere: "))
+    # Calculating volume
+    volume = sphere_volume(sphere_radius)
+    
+    # Printing results
+    print(f"The area of the circle with radius {circle_radius} is: {area:.2f}")
+    print(f"The volume of the sphere with radius {sphere_radius} is: {volume:.2f}")
+
+# Running the main function
+main()

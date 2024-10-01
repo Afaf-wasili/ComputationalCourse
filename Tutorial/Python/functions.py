@@ -1,4 +1,9 @@
+import numpy as np 
 '''
+<<<<<<< HEAD
+#Example: Function to print a string
+def Hello():
+=======
 len():The function len returns the length of a list.
 sum():Returns the sum of a list.
 max():Returns the largest item in a list.
@@ -20,39 +25,70 @@ print('min(num):',min(num))
 '''
 
 def message():
+>>>>>>> e81fefab9d5bec8c1f5d1a05cb5f1015ba47b505
     print("Hello world!")
-
-message()
-
+#calling and closing
+Hello()
+'''
+<<<<<<< HEAD
 
 '''
+<<<<<<< HEAD
+=======
+#Example:
+def carea():
+    radius = 5
+=======
+>>>>>>> new-feature-branch
 '''
 def carea(radius):
+>>>>>>> e81fefab9d5bec8c1f5d1a05cb5f1015ba47b505
     area = 3.14**radius
     print('Area of circle is', area)
 #here a is same is radius, radius=5, we can define a = 5 and do carea(a)
-a = 5
+carea()
+'''
+'''
+def carea(radius):
+    area = np.pi ** radius
+    print('Area of circle is', area)
 carea(5)
 ''
+<<<<<<< HEAD
+'''
+=======
+>>>>>>> new-feature-branch
 '''
 '''
-def simple_interest(principle, rate = 8, time = 1):
-
+'''
+#Example:
+def simple_interest(principle=1200, rate = 8, time = 1):
+    
     si = principle * rate * time / 100
-    print(si)
+    print('si:',si)
 
-simple_interest(principle=1200)
-#simple_interest(principle=1200) # this is correct is principle does not have a value in the function
+simple_interest()
 '''
 
+<<<<<<< HEAD
 '''
+=======
+<<<<<<< HEAD
+
+
+
+#Example: same for the above with different style
+=======
+'''
+>>>>>>> e81fefab9d5bec8c1f5d1a05cb5f1015ba47b505
+>>>>>>> new-feature-branch
 def simple_interest():
     principle = 1200
     rate = 8
     time =1
-
+    
     si = (principle * rate * time) / 100
-
-#print(si)
+#    print("output:",(principle * rate * time) / 100)
+#calling and closing otherwise not result will be priniting
 simple_interest()
 '''

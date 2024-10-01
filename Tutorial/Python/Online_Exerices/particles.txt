@@ -1,0 +1,5 @@
+Proton: 938.272 MeV/c^2
+Kaon: 493.677 	MeV/c^2
+Pion: 139.570  	MeV/c^2
+Muon: 105.658   MeV/c^2
+Electron: 0.511 MeV/c^2
