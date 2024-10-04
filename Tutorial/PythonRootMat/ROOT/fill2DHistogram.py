@@ -29,7 +29,7 @@ def fill2DHistogram():
     #       data_hist.Fill(data:MC)
      # Draw and save the 2D histogram
     c = ROOT.TCanvas("c", "Data vs MC", 800, 600)
-    hist_2d.Draw("colz")
+    hist_2d.Draw("COLZ")
     c.Show() 
     #c.SaveAs("Plots/Data_MC_2D_Histogram.png")
 
