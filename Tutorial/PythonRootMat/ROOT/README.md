@@ -9,11 +9,11 @@ note: matplotlib can not interacte with ROOT
 
 
 fill2DHistogram.py: this is how to plot two histograms on the same pad in 2D: Done 
-ratioplotCL.py: confidence level  
+ratioplotCL.py: confidence level  : not yet
 
 
-sigbkeff.py
-sigbkeffpu.py
+sigbkeff.py: Done
+sigbkeffpu.py: Done
 sigbkeffpuproduct.py
 
 This is Gussian equation with plot:
@@ -40,7 +40,7 @@ Purity:
 
 
 Purity=  signal(cut)/total(siganl(cuts) + background(cuts)
-
+purity 
 
  
 
