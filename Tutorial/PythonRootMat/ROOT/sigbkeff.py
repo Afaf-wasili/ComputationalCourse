@@ -1,5 +1,5 @@
 import ROOT
-
+'''
 # Apply the modern style
 ROOT.gROOT.SetStyle("ATLAS")
 ROOT.gROOT.ForceStyle()
@@ -16,7 +16,7 @@ ROOT.gStyle.SetLabelSize(0.03, "Y")
 ROOT.gStyle.SetTitleSize(0.04, "X")
 ROOT.gStyle.SetTitleSize(0.04, "Y")
 ROOT.gStyle.SetMarkerSize(0.5)
-
+'''
 # Open the ROOT file and get the signal tree
 file = ROOT.TFile("mlpHiggs.root", "READ")
 sig_tree = file.Get("sig_filtered")
@@ -27,26 +27,27 @@ total_signal_events = sig_tree.GetEntries()
 # Initialize graph for efficiency
 efficiency_graph = ROOT.TGraphErrors()
 
-# Define the range of acolinearity thresholds to evaluate
-acolin_thresholds = range(35, 180)  # Acolinearity thresholds from 35 to 179 degrees
+# Define the range of acolinearity thresholds to evaluate/
+acolin_thresholds = range(80, 200)  # Acolinearity thresholds from 35 to 180 degrees
 
 # Loop over acolinearity thresholds
-for acolin_threshold in acolin_thresholds:
+for i in acolin_thresholds:
     signal_entry_count = 0  # Count valid signal entries for each threshold
 
     # Loop over signal entries
-    for i in range(total_signal_events):
-        sig_tree.GetEntry(i)
+    for j in range(total_signal_events):
+        sig_tree.GetEntry(j)
         # Count valid signal entries based on the acolinearity threshold
-        if sig_tree.acolin >= acolin_threshold:
-            signal_entry_count += 1
+        if sig_tree.acolin >= i:    
+           
+           signal_entry_count += 1
 
     # Calculate efficiency
-    efficiency = signal_entry_count / total_signal_events if total_signal_events > 0 else 0
-    efficiency_error = (efficiency * (1 - efficiency) / total_signal_events) ** 0.5 if total_signal_events > 0 else 0
+    efficiency = signal_entry_count / total_signal_events 
+    efficiency_error = (efficiency * (1 - efficiency) / total_signal_events) ** 0.5 
 
     # Set points in the efficiency graph
-    efficiency_graph.SetPoint(efficiency_graph.GetN(), acolin_threshold, efficiency)
+    efficiency_graph.SetPoint(efficiency_graph.GetN(), i, efficiency)
     efficiency_graph.SetPointError(efficiency_graph.GetN() - 1, 0, efficiency_error)
 
 # Configure graph appearance for efficiency
@@ -63,7 +64,7 @@ canvas.SetGrid()  # Enable grid on the canvas
 efficiency_graph.Draw("ALP")  # Draw efficiency graph
 
 # Set Y-axis range from 0.0 to 1.0
-efficiency_graph.GetYaxis().SetRangeUser(0.0, 1.0)
+#efficiency_graph.GetYaxis().SetRangeUser(0.0, 1.0)
 
 canvas.Update()
 ROOT.gApplication.Run()

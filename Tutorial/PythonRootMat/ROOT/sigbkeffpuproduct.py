@@ -29,56 +29,60 @@ bg_tree = file.Get("bg_filtered")
 total_signal_events = sig_tree.GetEntries()
 total_background_events = bg_tree.GetEntries()
 
-# Initialize graphs for efficiency and purity
+# Initialize graphs for efficiency, purity, and their product
 efficiency_graph = ROOT.TGraphErrors()
 purity_graph = ROOT.TGraphErrors()
+product_graph = ROOT.TGraphErrors()  # New graph for the product
 
 # Define the range of acolinearity thresholds to evaluate
-acolin_thresholds = range(35, 180)  # Acolinearity thresholds from 35 to 180 degrees
+acolin_thresholds = range(35, 180)  # Acolinearity thresholds from 35 to 179 degrees
 
 # Loop over acolinearity thresholds
-for i in acolin_thresholds:
+for acolin_threshold in acolin_thresholds:
     signal_entry_count = 0  # Count valid signal entries for each threshold
     background_entry_count = 0  # Count valid background entries for each threshold
 
     # Loop over signal entries
-    for j in range(total_signal_events):
-        sig_tree.GetEntry(j)
+    for i in range(total_signal_events):
+        sig_tree.GetEntry(i)
         # Count valid signal entries based on the acolinearity threshold
-        if sig_tree.acolin >= i:
+        if sig_tree.acolin >= acolin_threshold:
             signal_entry_count += 1
 
     # Loop over background entries
-    for k in range(total_background_events):
-        bg_tree.GetEntry(k)
+    for j in range(total_background_events):
+        bg_tree.GetEntry(j)
         # Count valid background entries based on the acolinearity threshold
-        if bg_tree.acolin >= i:
+        if bg_tree.acolin >= acolin_threshold:
             background_entry_count += 1
 
     # Calculate efficiency
-    if signal_entry_count == 0 or total_signal_events==0:
-       continue 
-    efficiency = signal_entry_count / total_signal_events
-    efficiency_error = (efficiency * (1 - efficiency) / total_signal_events) ** 0.5 
+    efficiency = signal_entry_count / total_signal_events if total_signal_events > 0 else 0
+    efficiency_error = (efficiency * (1 - efficiency) / total_signal_events) ** 0.5 if total_signal_events > 0 else 0
 
     # Calculate purity
     total_valid_events = signal_entry_count + background_entry_count
+    purity = signal_entry_count / total_valid_events if total_valid_events > 0 else 0
+    purity_error = (purity * (1 - purity) / total_valid_events) ** 0.5 if total_valid_events > 0 else 0
 
-    
-    purity = signal_entry_count / total_valid_events
-     
-    purity_error = (purity * (1 - purity) / total_valid_events) ** 0.5 
+    # Calculate the product of efficiency and purity
+    product = efficiency * purity
+    product_error = product * ((efficiency_error / efficiency) ** 2 + (purity_error / purity) ** 2) ** 0.5 if efficiency > 0 and purity > 0 else 0
 
     # Set points in the graphs
-    efficiency_graph.SetPoint(efficiency_graph.GetN(), i, efficiency)
-    efficiency_graph.SetPointError(efficiency_graph.GetN() -1 , 0, efficiency_error)
-    purity_graph.SetPoint(purity_graph.GetN(), i, purity)
+    efficiency_graph.SetPoint(efficiency_graph.GetN(), acolin_threshold, efficiency)
+    efficiency_graph.SetPointError(efficiency_graph.GetN() - 1, 0, efficiency_error)
+
+    purity_graph.SetPoint(purity_graph.GetN(), acolin_threshold, purity)
     purity_graph.SetPointError(purity_graph.GetN() - 1, 0, purity_error)
 
+    product_graph.SetPoint(product_graph.GetN(), acolin_threshold, product)
+    product_graph.SetPointError(product_graph.GetN() - 1, 0, product_error)
+
 # Configure graph appearance for efficiency
-efficiency_graph.SetTitle("Signal Efficiency and Purity vs Acolinearity")
+efficiency_graph.SetTitle("Signal Efficiency, Purity, and Product vs Acolinearity")
 efficiency_graph.GetXaxis().SetTitle("Acolinearity (degrees)")
-efficiency_graph.GetYaxis().SetTitle("Signal Efficiency / Purity")
+efficiency_graph.GetYaxis().SetTitle("Signal Efficiency / Purity / Product")
 efficiency_graph.SetLineColor(ROOT.kBlue)
 efficiency_graph.SetMarkerStyle(20)
 efficiency_graph.SetMarkerColor(ROOT.kBlue)
@@ -88,20 +92,28 @@ purity_graph.SetLineColor(ROOT.kRed)
 purity_graph.SetMarkerStyle(21)
 purity_graph.SetMarkerColor(ROOT.kRed)
 
+# Configure graph appearance for product
+product_graph.SetLineColor(ROOT.kGreen + 2)
+product_graph.SetMarkerStyle(22)
+product_graph.SetMarkerColor(ROOT.kGreen + 2)
+
 # Draw the graphs
-canvas = ROOT.TCanvas("canvas", "Signal Efficiency and Purity vs Acolinearity", 800, 600)
-canvas.SetGrid()  # Enable grid on the canvas
+canvas = ROOT.TCanvas("canvas", "Signal Efficiency, Purity, and Product vs Acolinearity", 800, 600)
+canvas.SetGrid()
+
 efficiency_graph.Draw("ALP")  # Draw efficiency graph
-purity_graph.Draw("LP")  # Draw purity graph on the same canvas
+purity_graph.Draw("LP SAME")  # Draw purity graph on the same canvas
+product_graph.Draw("LP SAME")  # Draw product graph on the same canvas
 
 # Set Y-axis range from 0.0 to 1.0
-#efficiency_graph.GetYaxis().SetRangeUser(0.009, 1.01)
+efficiency_graph.GetYaxis().SetRangeUser(0.009, 1.01)
 
 # Create and configure the legend
 legend = ROOT.TLegend(0.17, 0.17, 0.3, 0.34)  # Define legend position
-legend.SetHeader("g + g \\rightarrow c + \\bar{c}")  # Add a header to the legend
-legend.AddEntry(efficiency_graph, "Efficiency", "alp")  # Add efficiency entry
+legend.SetHeader("Legend")  # Add a header to the legend
+legend.AddEntry(efficiency_graph, "Efficiency", "lp")  # Add efficiency entry
 legend.AddEntry(purity_graph, "Purity", "lp")  # Add purity entry
+legend.AddEntry(product_graph, "Product", "lp")  # Add product entry
 legend.Draw()  # Draw the legend
 
 canvas.Update()

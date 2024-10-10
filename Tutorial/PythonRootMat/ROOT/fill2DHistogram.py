@@ -8,7 +8,6 @@ def fill2DHistogram():
 
     data_hist = file.Get("data")
     mc_hist = file.Get("MC")
-    #hist = ROOT.TH1F("","",nbin,min _x, max_x) for 1 D
  
     # Create a 2D histogram using binning from data_hist and mc_hist
     nbins = data_hist.GetNbinsX()  # Assuming both histograms have the same number of bins

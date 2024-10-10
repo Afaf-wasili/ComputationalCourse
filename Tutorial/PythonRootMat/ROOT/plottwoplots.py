@@ -170,6 +170,7 @@ data_hist.SetTitle("MC and data")
 
 # Create and draw the legend
 legend = ROOT.TLegend(0.5, 0.5, 0.7, 0.7)
+legend.SetHeader("made by Afaf")
 legend.AddEntry(data_hist, "Data", "P")
 legend.AddEntry(mc_hist, "MC", "P")
 legend.Draw()
