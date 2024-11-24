@@ -2,7 +2,7 @@ import ROOT
 
 def fill2DHistogram():
     ROOT.gStyle.SetPalette(ROOT.kRainBow)
-    # Open the ROOT file and retrieve histograms
+    # Open the Rhisto.rootOOT file and retrieve histograms
     file = ROOT.TFile.Open("histo.root")
 
 

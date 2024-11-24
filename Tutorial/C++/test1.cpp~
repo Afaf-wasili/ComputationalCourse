@@ -1,0 +1,31 @@
+#include <iostream>
+
+class ProtonSpin {
+private:
+    double deltaSigma; // Spin contribution from quarks and antiquarks
+    double deltaG;     // Contribution from gluons
+    double Lq;         // Spin contribution from quark angular momentum
+    double Lg;         // Spin contribution from gluon angular momentum
+
+public:
+    // Constructor to initialize the values
+    ProtonSpin(double ds, double dg, double lq, double lg)
+        : deltaSigma(ds), deltaG(dg), Lq(lq), Lg(lg) {}
+
+    // Method to calculate the spin of the proton
+    double calculateSpin() {
+        return  (0.5* deltaSigma + deltaG + Lq + Lg);
+    }
+};
+
+int test1() {
+    // Initialize contributions (example values)
+    ProtonSpin proton(0.3, 0.2, 0.001, 0.001); // Example contributions
+
+    // Calculate and output the spin of the proton
+    //double spin =
+      proton.calculateSpin();
+    std::cout << "The calculated spin of the proton is: " << proton.calculateSpin() << std::endl;
+
+    return 0;
+}
