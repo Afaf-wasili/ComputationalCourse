@@ -1,5 +1,4 @@
-'''
-Q3: Write a Python script that uses the math library to perform the following calculations:
+/*Q3: Write a Python script that uses the math library to perform the following calculations:
 
 1. Calculate the Area of a Circle:
 
@@ -15,6 +14,25 @@ B. Use the circle_area and sphere_volume functions to calculate the area and vol
 C. Print the results with appropriate labels.
 
 Ensure that the script correctly performs these calculations and handles user input.
-'''
+*/
+
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int main() {
+    double circle_radius, sphere_radius;
+
+    cout << "Enter the radius of the circle: ";
+    cin >> circle_radius;
+    cout << "Area of the circle: " << M_PI * circle_radius * circle_radius << endl;
+
+    cout << "Enter the radius of the sphere: ";
+    cin >> sphere_radius;
+    cout << "Volume of the sphere: " << (4.0 / 3.0) * M_PI * pow(sphere_radius, 3) << endl;
+
+    return 0;
+}
 
 
