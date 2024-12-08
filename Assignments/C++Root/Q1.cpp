@@ -12,3 +12,6 @@ Threshold Range
 
 5. How would you modify your loop to evaluate acolinearity thresholds from 80 to 200 ?
  */
+
+
+we did in online exerise exactly same
