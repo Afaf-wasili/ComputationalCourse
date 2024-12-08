@@ -9,12 +9,14 @@ running/compling: root -l
 
 fill2DHistogram.cpp: this is how to plot two histograms on the same pad in 2D: Done 
 fill2DHistogramsigbk.cpp: this is how to plot two histograms in tree as leaves on the same pad in 2D: Done
-ratioplotCL.cpp: confidence level: not yet
+ratioplotCL.cpp: confidence level: Done
 
 sigbk.cpp:plot two histograms in same canvas using root file includes tree and leaves: Done
 sigbkeff.cpp: Done
 sigbkeffpu.cpp: 
-sigbkeffpuproduct.cpp:
+sigbkeffpuproduct.cpp:  Done
+how to read txt file and plotting the data using the ROOT: readtxt.cpp
+
 
 This is Gussian equation with plot:
 https://en.wikipedia.org/wiki/Normal_distribution
