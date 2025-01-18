@@ -7,326 +7,320 @@ This source file contains definitions of various functions in the method class.
 using namespace std;
 
 // Set up empty pointer for instance of the class.
-Tracker* Tracker::s_instance = NULL;
+DIRCTracker* DIRCTracker::s_instance = nullptr;
 
 /**
-Constructor for the tracker class.
+Constructor for the DIRCTracker class.
  */
-Tracker::Tracker() {
-	// Set mapping for U0...V1
-	string tempMapping[4] = {"U0", "U1", "V0", "V1"};
-	for (int i_view = 0; i_view < viewN; i_view++) {
-		UVmapping.push_back(vector<string> ()); //initialize the first index with a 2D vector
-		for (int i_layer = 0; i_layer < layerN; i_layer++) {
-			if (i_view == 0) {UVmapping[i_view].push_back(tempMapping[i_layer]);}
-			if (i_view == 1) {UVmapping[i_view].push_back(tempMapping[i_layer + 2]);}
-		} //layers
-	} // views
-
+DIRCTracker::DIRCTracker() {
+    // Set mapping for U0...V1
+    string tempMapping[4] = {"U0", "U1", "V0", "V1"};
+    for (int i_view = 0; i_view < viewN; i_view++) {
+        UVmapping.push_back(vector<string> ()); //initialize the first index with a 2D vector
+        for (int i_layer = 0; i_layer < layerN; i_layer++) {
+            if (i_view == 0) {
+                UVmapping[i_view].push_back(tempMapping[i_layer]);
+            }
+            if (i_view == 1) {
+                UVmapping[i_view].push_back(tempMapping[i_layer + 2]);
+            }
+        } // layers
+    } // views
 } // constructor
 
 /**
-    Empty destructor for tracker class.
+    Empty destructor for DIRCTracker class.
 */
-Tracker::~Tracker() {
+DIRCTracker::~DIRCTracker() {
 }
 
 /**
-   Get pointer to only instance of tracker class, creating this instance if it doesn't already exist.
-   instance is a static member function of Tracker (singleton)
-   @return Pointer to tracker instance.
+   Get pointer to only instance of DIRCTracker class, creating this instance if it doesn't already exist.
+   instance is a static member function of DIRCTracker (singleton)
+   @return Pointer to DIRCTracker instance.
  */
-Tracker* Tracker::instance() {
-	// Create pointer to class instance if one doesn't exist already, then return that pointer.
-	if (s_instance == NULL) s_instance = new Tracker();
-	return s_instance;
+DIRCTracker* DIRCTracker::instance() {
+    // Create pointer to class instance if one doesn't exist already, then return that pointer.
+    if (s_instance == nullptr) s_instance = new DIRCTracker();
+    return s_instance;
 }
 
 /**
    Write a steering file to the supplied file-stream.
     @param steering_file reference to ofstream to write steering file to.
  */
-void Tracker::writeSteeringFile(ofstream& steering_file, ofstream& metric) {
-	if (steering_file.is_open()) {
+void DIRCTracker::writeSteeringFile(ofstream& steering_file, ofstream& metric) {
+    if (steering_file.is_open()) {
+        std::stringstream pede_method; pede_method.str(""); pede_method << "method inversion 5 0.001";
+        metric << "| " << pede_method.str().c_str();
+        std::stringstream msg_method;
+        msg_method << Logger::yellow() << pede_method.str().c_str();
+        Logger::Instance()->write(Logger::NOTE, msg_method.str());
 
-		std::stringstream pede_method; pede_method.str(""); pede_method << "method inversion 5 0.001";
-		metric << "| " << pede_method.str().c_str();
-		std::stringstream msg_method;
-		msg_method << Logger::yellow() << pede_method.str().c_str();
-		Logger::Instance()->write(Logger::NOTE, msg_method.str());
-
-		steering_file <<  "* g-2 Tracker Alignment: PEDE Steering File" << endl
-		              << " "  << endl
-		              << "Tracker_con.txt   ! constraints text file (if applicable) " << endl
-		              << "Tracker_par.txt   ! parameters (presgima) text file (if applicable)" << endl
-		              << "Cfiles ! following bin files are Cfiles" << endl
-		              << "Tracker_data.bin   ! binary data file" << endl
-		              << "method inversion 5 0.001" << endl
-		              << "printrecord 2 -1 ! produces mpdebug.txt for record 2 with the largest value of χ2/Ndf" << endl
-		              << " "  << endl
-		              << "end ! optional for end-of-data" << endl;
-	} // steering file open
+        steering_file <<  "* g-2 DIRC Tracker Alignment: PEDE Steering File" << endl
+                      << " "  << endl
+                      << "DIRC_con.txt   ! constraints text file (if applicable) " << endl
+                      << "DIRC_par.txt   ! parameters (presgima) text file (if applicable)" << endl
+                      << "Cfiles ! following bin files are Cfiles" << endl
+                      << "DIRC_data.bin   ! binary data file" << endl
+                      << "method inversion 5 0.001" << endl
+                      << "printrecord 2 -1 ! produces mpdebug.txt for record 2 with the largest value of χ2/Ndf" << endl
+                      << " "  << endl
+                      << "end ! optional for end-of-data" << endl;
+    } // steering file open
 } // steering function
 
 /**
    Write a constraint file to the supplied file-stream.
     @param constraint_file reference to ofstream to write constraint file to.
  */
-void Tracker::writeConstraintFile(ofstream& constraint_file, ofstream& debug_con, bool debugBool, ofstream& metric) {
-	// Check constraints file is open, then write.
-	if (constraint_file.is_open()) {
-		//Evaluation of constraints
-		float one = 1.0;
-		metric << " | C: ";
-		stringstream labelt;
-		// Given number of constraints
-		int i_module = 0; //select first module
-		for (int i_NC = 0; i_NC < matNC ; i_NC++) {
-
-			constraint_file << "Constraint 0.0" << endl;
-			//labelt << "-; "; // == no constraintss // XXX
-			int labelt = i_module + 1; // Millepede accepts +ive labels only
-			constraint_file << labelt << " " << fixed << setprecision(5) << one << endl;
-			i_module = moduleN - 1 ; // select last module
-
-		} // end of NC loop
-		metric << labelt.str().c_str();
-	} // constrain file open
-	cout << "Memory space requirement (inversion method, i.e. upper bound) = " << ( matN * matN + matN ) / 2 + matN * matNC + ( matNC * matNC + matNC ) / 2 << endl;
+void DIRCTracker::writeConstraintFile(ofstream& constraint_file, ofstream& debug_con, bool debugBool, ofstream& metric) {
+    // Check constraints file is open, then write.
+    if (constraint_file.is_open()) {
+        // Evaluation of constraints
+        float one = 1.0;
+        metric << " | C: ";
+        stringstream labelt;
+        // Given number of constraints
+        int i_bar = 0; // select first bar
+        for (int i_NC = 0; i_NC < matNC ; i_NC++) {
+            constraint_file << "Constraint 0.0" << endl;
+            int labelt = i_bar + 1; // Millepede accepts +ive labels only
+            constraint_file << labelt << " " << fixed << setprecision(5) << one << endl;
+            i_bar = barCount - 1; // select last bar
+        } // end of NC loop
+        metric << labelt.str().c_str();
+    } // constraint file open
+    cout << "Memory space requirement (inversion method, i.e. upper bound) = " 
+         << ( matN * matN + matN ) / 2 + matN * matNC + ( matNC * matNC + matNC ) / 2 << endl;
 } // end of writing cons file
 
 /**
    Write a presigma parameter file to the supplied file-stream.
     @param presigma_file reference to ofstream to write presigma file to.
  */
-void Tracker::writePresigmaFile(ofstream& presigma_file, ofstream& metric) {
-	// Check constraints file is open, then write.
-	if (presigma_file.is_open()) {
-		presigma_file << "PARAMETERS" << endl;
-		metric << " | P: ";
-		//Fixing module 0 and the last module
-		for (int i_module = 0; i_module < moduleN; i_module++) {
-			for (int i_par = 0; i_par < ngl; i_par++) {
-				if (i_module == 0 || i_module == moduleN - 1) {
-					//if (i_module == 1 || i_module == 2) {
-					float initialValue = 0.0; //modules at x0
-					float preSigma = -1.0;
-					int labelM = i_module + 1; // Millepede accepts +ive labels only
-					int labelP = i_par + 1; // Millepede accepts +ive labels only
-					presigma_file << labelM << labelP << " " << fixed << setprecision(5) << initialValue << fixed << setprecision(5) << " " << preSigma << endl;
-					metric << labelM << labelP << " " << initialValue << " " << preSigma << "; ";
-				} // end of fixed modules
-			} //end of global parameter loop
-		} // end of detectors loop
-	} // presigma file open
+void DIRCTracker::writePresigmaFile(ofstream& presigma_file, ofstream& metric) {
+    // Check constraints file is open, then write.
+    if (presigma_file.is_open()) {
+        presigma_file << "PARAMETERS" << endl;
+        metric << " | P: ";
+        // Fixing bar 0 and the last bar
+        for (int i_bar = 0; i_bar < barCount; i_bar++) {
+            for (int i_par = 0; i_par < ngl; i_par++) {
+                if (i_bar == 0 || i_bar == barCount - 1) {
+                    float initialValue = 0.0; // bars at x0
+                    float preSigma = -1.0;
+                    int labelB = i_bar + 1; // Millepede accepts +ive labels only
+                    int labelP = i_par + 1; // Millepede accepts +ive labels only
+                    presigma_file << labelB << labelP << " " << fixed << setprecision(5) << initialValue 
+                                  << fixed << setprecision(5) << " " << preSigma << endl;
+                    metric << labelB << labelP << " " << initialValue << " " << preSigma << "; ";
+                } // end of fixed bars
+            } // end of global parameter loop
+        } // end of bars loop
+    } // presigma file open
 } // end of writing presigma file
 
 /**
    Define centre of rotation
-   @return rotation centres for each module
+   @return rotation centres for each bar
  */
-RotationCentres Tracker::getCentre(std::vector< std::vector< std::vector< std::vector< float > > > > mod_lyr_strawPositionX, std::vector< std::vector< std::vector< std::vector< float > > > > mod_lyr_strawPositionZ, ofstream& plot_centres) {
-	RotationCentres centre;
-	// for a module given by i_global get first and last straws of the first and last layers
-	for (int i_global = 0; i_global < moduleN; i_global++) {
+RotationCentres DIRCTracker::getCentre(std::vector< std::vector< std::vector< std::vector< float > > > > bar_lyr_positionX, std::vector< std::vector< std::vector< std::vector< float > > > > bar_lyr_positionZ, ofstream& plot_centres) {
+    RotationCentres centre;
+    // for a bar given by i_global get first and last positions of the first and last layers
+    for (int i_global = 0; i_global < barCount; i_global++) {
+        // Set the centre of a bar as a rotation point
+        std::vector<float> U0_x = bar_lyr_positionX[i_global][0][0];  // U0x
+        std::vector<float> V1_x = bar_lyr_positionX[i_global][1][1];  // V1x
+        float U0_first_x = U0_x[0]; float V1_last_x = V1_x[strawN - 1];
+        std::vector<float> U0_z = bar_lyr_positionZ[i_global][0][0];  // z
+        std::vector<float> V1_z = bar_lyr_positionZ[i_global][1][1];  // z
+        float U0_first_z = U0_z[0]; float V1_last_z = V1_z[strawN - 1];
 
-		//Set the centre of a modules as a rotation point
-		std::vector<float> U0_x = mod_lyr_strawPositionX[i_global][0][0];  // U0x
-		std::vector<float> V1_x = mod_lyr_strawPositionX[i_global][1][1];  // V1x
-		float U0_first_x = U0_x[0]; float V1_last_x = V1_x[strawN - 1];
-		std::vector<float> U0_z = mod_lyr_strawPositionZ[i_global][0][0];  // z
-		std::vector<float> V1_z = mod_lyr_strawPositionZ[i_global][1][1];  // z
-		float U0_first_z = U0_z[0]; float V1_last_z = V1_z[strawN - 1];
+        float z_c(0), x_c(0);
+        x_c = (V1_last_x + U0_first_x) / 2;
+        z_c = (V1_last_z + U0_first_z) / 2;
 
-		float z_c(0), x_c(0);
-		x_c = (V1_last_x + U0_first_x) / 2;
-		z_c = (V1_last_z + U0_first_z) / 2;
-
-		centre.zCentres.push_back(z_c);
-		centre.xCentres.push_back(x_c);
-		plot_centres << z_c << " " << x_c << " ";
-	}
-	plot_centres << endl;
-	return centre;
+        centre.zCentres.push_back(z_c);
+        centre.xCentres.push_back(x_c);
+        plot_centres << z_c << " " << x_c << " ";
+    }
+    plot_centres << endl;
+    return centre;
 }
 
 /**
    DCA for a point to a line in 2D space
    @return dca
 */
-float Tracker::pointToLineDCA(float zStraw, float xStraw, float xSlope, float xIntercept) {
+float DIRCTracker::pointToLineDCA(float zStraw, float xStraw, float xSlope, float xIntercept) {
+    // http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
+    // converting from x=mz+c -> mz+x+c=0
+    float a = -xSlope;
+    float b = 1.0;
+    float c = -xIntercept;
+    float x0 = zStraw;
+    float y0 = xStraw;
 
-	//http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
-	//converting from x=mz+c -> mz+x+c=0
-	float a = -xSlope;
-	float b = 1.0;
-	float c = -xIntercept;
-	float x0 = zStraw;
-	float y0 = xStraw;
-
-	float dca = abs( a * x0 + b * y0 + c ) / sqrt( a * a + b * b  ) ;
-	return dca;
+    float dca = abs(a * x0 + b * y0 + c) / sqrt(a * a + b * b);
+    return dca;
 }
 
 /** Uses DCA function to find the shortest dca between straws (i.e. which straw was hit in that layer)
     @Inputs (see DCA method) + vector of straws' x coordinates in a layer, and a return type: "dca_hit"  or "x_line"
     @return hit_distance - dca of the straw that was hit
 */
-DCAData Tracker::DCAHit(vector<float> xLayer, vector<float> zLayer, float xTrack, float xSlpoe, float xIntercept, bool debugBool) {
+DCAData DIRCTracker::DCAHit(vector<float> xLayer, vector<float> zLayer, float xTrack, float xSlpoe, float xIntercept, bool debugBool) {
+    DCAData dcaData;
+    bool StrongDebugBool = false; // quick hack XXX for even more debug output
 
-	DCAData dcaData;
+    // Find the two closest x straw coordinates given x on the line - with same z [the vector of straw x is naturally in an ascending order]
+    // xTrack is the point of the line "in-line with the layers"
+    float lower, upper, hitDistance;
+    int lastID = strawN - 1; // the ID of the very last straw in the vector
+    int LR, index; // L= +1 or R=-1 hit looking downstream
+    vector<float>::iterator it;
 
-	bool StrongDebugBool = false; //quick hack XXX for even more debug output
-
-	//Find the two closest x straw coordinates given x on the line - with same z [the vector of straw x is naturally in an ascending order]
-	// xTrack is the point of the line "in-line with the layers"
-	float lower, upper, hitDistance;
-	int lastID = strawN - 1; // the ID of the very last straw in the vector
-	int LR, index; //L= +1 or R=-1 hit looking downstream
-	vector<float>::iterator it;
-
-	// If the very first straw [straw closest to the beam path], this straw has the highest x coordinate value in the distance-ordered descending straw-vector
-	// compares less than the hit, the hit must be from the L (+1)
-	if (xTrack > xLayer[0]) {
-		// hit distance is then the dca from the L of the straw with highest x coordinate
-		hitDistance = pointToLineDCA(zLayer[0], xLayer[0], xSlpoe, xIntercept);
-		LR = +1; // assign truth L
-		index = 0;
-		if (debugBool && StrongDebugBool) {
-			cout << "Track in line at " << xTrack << " The first straw is closest at " << upper <<  "; with DCA " << hitDistance << endl;
-		}
-	}
-	// Another scenario, is that the hit is smaller than the x coordinate of the last straw
-	else if (xTrack < xLayer[lastID]) {
-		// hit distance is the dca from the R of the last straw
-		hitDistance = pointToLineDCA(zLayer[0], xLayer[lastID], xSlpoe, xIntercept);
-		LR = -1;
-		index = lastID;
-		if (debugBool && StrongDebugBool) {
-			cout << "Track in line at " << xTrack << " The last straw is closest at " << lower <<  "; with DCA " << hitDistance << endl;
-		}
-	}
-	// All other cases will have a hit between two straws
-	// to check which DCA is actually shorter we need the calculate and compare
-	// the two [the straw-position vector iterator only checks the vertical distance] and assign LRma
-	else {
-		//we have already taken care of the end-straws, so now just need to look in between
-		int z_counter = 0;
-		for (int i_counter = 0; i_counter < xLayer.size(); i_counter++) {
-			if (xLayer[i_counter] < xTrack) {
-				lower = xLayer[i_counter];
-				upper = xLayer[i_counter - 1];
-				z_counter++;
-				if (debugBool && StrongDebugBool) cout << "lower= " << lower << " upper " << upper << endl;
-				//as soon as we find a single straw that is at lower x than the hit,
-				// our search is over
-				goto jmp;
-			}
-		}
+    // If the very first straw [straw closest to the beam path], this straw has the highest x coordinate value in the distance-ordered descending straw-vector
+    // compares less than the hit, the hit must be from the L (+1)
+    if (xTrack > xLayer[0]) {
+        // hit distance is then the dca from the L of the straw with highest x coordinate
+        hitDistance = pointToLineDCA(zLayer[0], xLayer[0], xSlpoe, xIntercept);
+        LR = +1; // assign truth L
+        index = 0;
+        if (debugBool && StrongDebugBool) {
+            cout << "Track in line at " << xTrack << " The first straw is closest at " << upper << "; with DCA " << hitDistance << endl;
+        }
+    }
+    // Another scenario, is that the hit is smaller than the x coordinate of the last straw
+    else if (xTrack < xLayer[lastID]) {
+        // hit distance is the dca from the R of the last straw
+        hitDistance = pointToLineDCA(zLayer[0], xLayer[lastID], xSlpoe, xIntercept);
+        LR = -1;
+        index = lastID;
+        if (debugBool && StrongDebugBool) {
+            cout << "Track in line at " << xTrack << " The last straw is closest at " << lower << "; with DCA " << hitDistance << endl;
+        }
+    }
+    // All other cases will have a hit between two straws
+    // to check which DCA is actually shorter we need the calculate and compare
+    // the two [the straw-position vector iterator only checks the vertical distance] and assign LRma
+    else {
+        // we have already taken care of the end-straws, so now just need to look in between
+        int z_counter = 0;
+        for (int i_counter = 0; i_counter < xLayer.size(); i_counter++) {
+            if (xLayer[i_counter] < xTrack) {
+                lower = xLayer[i_counter];
+                upper = xLayer[i_counter - 1];
+                z_counter++;
+                if (debugBool && StrongDebugBool) cout << "lower= " << lower << " upper " << upper << endl;
+                // as soon as we find a single straw that is at lower x than the hit,
+                // our search is over
+                goto jmp;
+            }
+        }
 jmp:
 
-		float hit_distance_low = pointToLineDCA(zLayer[z_counter], lower, xSlpoe, xIntercept);
-		float hit_distance_up = pointToLineDCA(zLayer[z_counter - 1], upper, xSlpoe, xIntercept);
+        float hit_distance_low = pointToLineDCA(zLayer[z_counter], lower, xSlpoe, xIntercept);
+        float hit_distance_up = pointToLineDCA(zLayer[z_counter - 1], upper, xSlpoe, xIntercept);
 
-		if (hit_distance_low < strawRadius && hit_distance_up < strawRadius) {
-			if (debugBool) {cout << "Multiple straws in layer were hit!" << endl;}
-			incMultipleHitsLayer();
-		}
+        if (hit_distance_low < strawRadius && hit_distance_up < strawRadius) {
+            if (debugBool) { cout << "Multiple straws in layer were hit!" << endl; }
+            incMultipleHitsLayer();
+        }
 
-		// if DCA in higher straw (lower ID) is bigger, select straw ID with smaller DCA
-		if (hit_distance_up > hit_distance_low) {
-			hitDistance = hit_distance_low;
-			LR = +1;
-			// unique and ordered straw positions in vector guarantee correct id
-			it = std::find(xLayer.begin(), xLayer.end(), lower);
-			index = std::distance(xLayer.begin(), it);
-		}
-		if (hit_distance_up < hit_distance_low) {
-			hitDistance = hit_distance_up;
-			LR = -1;
-			it = std::find(xLayer.begin(), xLayer.end(), upper);
-			index = std::distance(xLayer.begin(), it);
-		}
-		//if DCAs are equal, drop the dice... XXX won't be relevant with hit rejection
-		if (hit_distance_up == hit_distance_low) {
-			float random = randomFacility->Uniform(0.0, 1.0);
-			if (random < 0.5) {
-				hitDistance = hit_distance_low;
-			}
-			if (random > 0.5) {
-				hitDistance = hit_distance_up;
-			}
-			cout << "Ambiguity which straw registered hit" << endl;
-			incAmbiguityHit();
-		}
-		if (debugBool && StrongDebugBool) {
-			cout <<  "Track in Line " << xTrack << "Two straws closest to that point are " << lower << ", and " << upper <<  "; with DCAs " << hit_distance_low <<  " and " << hit_distance_up << ", respectively." << endl;
-		}
-	} // end of iterator to find straws between hits
+        // if DCA in higher straw (lower ID) is bigger, select straw ID with smaller DCA
+        if (hit_distance_up > hit_distance_low) {
+            hitDistance = hit_distance_low;
+            LR = +1;
+            // unique and ordered straw positions in vector guarantee correct id
+            it = std::find(xLayer.begin(), xLayer.end(), lower);
+            index = std::distance(xLayer.begin(), it);
+        }
+        if (hit_distance_up < hit_distance_low) {
+            hitDistance = hit_distance_up;
+            LR = -1;
+            it = std::find(xLayer.begin(), xLayer.end(), upper);
+            index = std::distance(xLayer.begin(), it);
+        }
+        // if DCAs are equal, drop the dice... XXX won't be relevant with hit rejection
+        if (hit_distance_up == hit_distance_low) {
+            float random = randomFacility->Uniform(0.0, 1.0);
+            if (random < 0.5) {
+                hitDistance = hit_distance_low;
+            }
+            if (random > 0.5) {
+                hitDistance = hit_distance_up;
+            }
+            cout << "Ambiguity which straw registered hit" << endl;
+            incAmbiguityHit();
+        }
+        if (debugBool && StrongDebugBool) {
+            cout << "Track in Line " << xTrack << "Two straws closest to that point are " << lower << ", and " << upper << "; with DCAs " << hit_distance_low << " and " << hit_distance_up << ", respectively" << endl;
+        }
+    } // end of iterator to find straws between hits
 
-	//Now smear the DCA data
-	dcaData.dcaUnsmeared = hitDistance;
-	float hitDistanceSmeared = hitDistance + Tracker::instance()->getResolution() * randomFacility->Gaus(0.0, 1.0);
-	//Apply a 500 um cut on the WHOLE track
-	if (abs(hitDistanceSmeared) < trackCut && trackCutBool==true) {
-		cutTriggered = true; // will be checked in the MC_Launch on DCA return
-	}
+    // Now smear the DCA data
+    dcaData.dcaUnsmeared = hitDistance;
+    float hitDistanceSmeared = hitDistance + DIRCTracker::instance()->getResolution() * randomFacility->Gaus(0.0, 1.0);
+    // Apply a 500 um cut on the WHOLE track
+    if (abs(hitDistanceSmeared) < trackCut && trackCutBool == true) {
+        cutTriggered = true; // will be checked in the MC_Launch on DCA return
+    }
 
-	dcaData.dca = hitDistanceSmeared;
-	float residualTruth = hitDistanceSmeared - hitDistance;
-	dcaData.residualTruth = residualTruth;
-	dcaData.LRSign = LR;
-	dcaData.strawID = index;
+    dcaData.dca = hitDistanceSmeared;
+    float residualTruth = hitDistanceSmeared - hitDistance;
+    dcaData.residualTruth = residualTruth;
+    dcaData.LRSign = LR;
+    dcaData.strawID = index;
 
-	if (debugBool && StrongDebugBool) {
-		cout << "Selected DCA as the correct hit distance is " << hitDistance << ". Straw ID: " << dcaData.strawID;
-		if (LR  < 0) {cout << ". The straw was hit from the right" << endl;}
-		if (LR > 0) {cout << ". The straw was hit from the left" << endl;}
-	}//debug
-	return dcaData; // as dca and id of the closest straw
+    if (debugBool && StrongDebugBool) {
+        cout << "Selected DCA as the correct hit distance is " << hitDistance << ". Straw ID: " << dcaData.strawID;
+        if (LR < 0) { cout << ". The straw was hit from the right" << endl; }
+        if (LR > 0) { cout << ". The straw was hit from the left" << endl; }
+    } // debug
+    return dcaData; // as dca and id of the closest straw
 }
 
-
 // Adds DCA to the ideal geometry
-ReconData Tracker::HitRecon(int detID, float detDca, vector<float> xLayer, vector<float> zLayer) {
-
-	ReconData reconData;
-	bool StrongDebugBool = false; //quick hack XXX for even more debug output
-	float xIdealStraw = xLayer[detID];
-	float reconDca = detDca; //adds dca to the assumed straw x coordinate
-	reconData.z = zLayer[detID];
-	reconData.x = xIdealStraw;
-	reconData.dcaRecon = reconDca;
-	return reconData;
+ReconData DIRCTracker::HitRecon(int detID, float detDca, vector<float> xLayer, vector<float> zLayer) {
+    ReconData reconData;
+    bool StrongDebugBool = false; // quick hack XXX for even more debug output
+    float xIdealStraw = xLayer[detID];
+    float reconDca = detDca; // adds dca to the assumed straw x coordinate
+    reconData.z = zLayer[detID];
+    reconData.x = xIdealStraw;
+    reconData.dcaRecon = reconDca;
+    return reconData;
 }
 
 // Function to return residuals to the fitted line (due to dca point scatter + resolution of the detector)
 // @ Inputs: z,x position of straws, radius of drift circle, # circles, plotting file for input, verbosity flag, truth flag
 // Truth can be used as an optional input [e.g. LR information]
 // @return vector of residuals for each straw
-ResidualData Tracker::GetResiduals(vector<float> zRecon, vector<float> xRecon, vector<float> radRecon, int dataSize, ofstream& plot_fit, bool debugBool, bool useTruthLR, vector<int> LRTruth) {
+ResidualData DIRCTracker::GetResiduals(vector<float> zRecon, vector<float> xRecon, vector<float> radRecon, int dataSize, ofstream& plot_fit, bool debugBool, bool useTruthLR, vector<int> LRTruth) {
+    ResidualData resData; // return slope, intercept of the fitted track
+    bool StrongDebugBool = false; // quick hack XXX for even more debug output
 
-	ResidualData resData; // return slope, intercept of the fitted track
+    // from James's code: https://cdcvs.fnal.gov/redmine/projects/gm2tracker/repository/entry/teststand/StraightLineTracker_module.cc?utf8=%E2%9C%93&rev=feature%2FtrackDevelop
+    // line 392 onwards, inputs to the original function: vector<DriftCircle>& circles, double pValCut, long long truthLRCombo
+    int nHits = dataSize; // same for no hit rejection
 
-	bool StrongDebugBool = false; //quick hack XXX for even more debug output
+    // These sums are parameters for the analytic results that don't change between LR combos (use U here but equally applicable to V coordinate)
+    double S(0), Sz(0), Su(0), Szz(0), Suu(0), Suz(0); // also good declaration style for custom types
+    for (int i_hit = 0; i_hit < nHits; i_hit++) {
+        double z = zRecon[i_hit];
+        double u = xRecon[i_hit];
+        double err2 = pow(DIRCTracker::instance()->getResolution(), 2); // the error is determined by the resolution [constant]
+        S += 1. / err2;
+        Sz += z / err2;
+        Su += u / err2;
+        Szz += z * z / err2;
+        Suu += u * u / err2;
+        Suz += u * z / err2;
+    } // hits
 
-	// from James's code: https://cdcvs.fnal.gov/redmine/projects/gm2tracker/repository/entry/teststand/StraightLineTracker_module.cc?utf8=%E2%9C%93&rev=feature%2FtrackDevelop
-	// line 392 onwards, inputs to the original function: vector<DriftCircle>& circles, double pValCut, long long truthLRCombo
-	int nHits = dataSize; // same for no hit rejection
-
-	// These sums are parameters for the analytic results that don't change between LR combos (use U here but equally applicable to V coordinate)
-	double S(0), Sz(0), Su(0), Szz(0), Suu(0), Suz(0); // also good declaration style fur custom types
-	for (int i_hit = 0; i_hit < nHits; i_hit++) {
-		double z = zRecon[i_hit];
-		double u = xRecon[i_hit];
-		double err2 = pow(Tracker::instance()->getResolution(), 2); // the error is determined by the resolution [constant]
-		S   += 1. / err2;
-		Sz  += z / err2;
-		Su  += u / err2;
-		Szz += z * z / err2;
-		Suu += u * u / err2;
-		Suz += u * z / err2;
-	} // hits
+    
 
 	// Number of LR combinations (2^N or 1 if using truth)
 	int nLRCombos = pow(2, nHits);
