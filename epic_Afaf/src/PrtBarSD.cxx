@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <set>
 
 // Include Mille header
 #include "/home/afafwasili/nominalFEPIC/MillepedeII/Mille.h"
@@ -21,8 +22,9 @@
 #include "PrtManager.h"
 
 // Initialize Mille with the binary file
-static Mille* mille("milleBinaryFile.bin");
-// Constraints, Steering and Parameter files are the inputs to Pede (together with binary file).
+static Mille* mille = new Mille("milleBinaryFile.bin");
+
+// Constraints, Steering, and Parameter files are the inputs to Pede (together with binary file).
 std::ofstream constraint_file("Tracker_con.txt");
 std::ofstream presigma_file("Tracker_par.txt");
 std::ofstream metric_file("metric_log.txt");
@@ -57,7 +59,7 @@ void PrtBarSD::write_constraint_file(std::ofstream& constraint_file, std::ofstre
 
     int barN = 10;  // Total bars (0-9)
     float one = 1.0; // Constraint weight
-    std::stringstream labelStream;
+    std::set<int> unique_labels; // To keep track of unique labels
 
     G4cout << "Writing constraint file..." << G4endl;
 
@@ -65,9 +67,13 @@ void PrtBarSD::write_constraint_file(std::ofstream& constraint_file, std::ofstre
     for (int barIndex : {0, 9}) { 
         constraint_file << "Constraint 0.0\n";
         for (int param = 0; param < 3; param++) { // X-shift, Y-shift, X-rotation
-            int label = (barIndex * 100) + param + 1;
-            constraint_file << label << " " << std::fixed << std::setprecision(5) << one << "\n";
-            labelStream << label << "; ";
+            int label = barIndex * 10 + param + 1;
+            if (unique_labels.insert(label).second) { // Only add if the label is unique
+                constraint_file << label << " " << std::fixed << std::setprecision(5) << one << "\n";
+                if (debugBool) {
+                    debug_con << "Fixed Bar: " << barIndex << " Label: " << label << "\n";
+                }
+            }
         }
     }
 
@@ -91,7 +97,7 @@ void PrtBarSD::write_presigma_file(std::ofstream &presigma_file, std::ofstream &
         for (int param = 0; param < 3; param++) { // X-shift, Y-shift, X-rotation
             float initialValue = (i == misalignedBar) ? ((param == 0) ? -0.1 : (param == 1) ? 0.4 : 0.5) : 0.0;
             float preSigma = (i == misalignedBar) ? 0.01 : -1.0;
-            int label = (i * 100) + param + 1;
+            int label = i * 10 + param + 1;
             presigma_file << label << " " << std::fixed << std::setprecision(5) << initialValue
                           << " " << preSigma << "\n";
             metric_file << label << " " << initialValue << " " << preSigma << "; ";
@@ -112,7 +118,7 @@ void PrtBarSD::write_steering_file(std::ofstream &steering_file, std::ofstream &
         steering_file << "* g-2 Tracker Alignment: PEDE Steering File" << std::endl
                       << " " << std::endl
                       << "Tracker_con.txt   ! constraints text file (if applicable) " << std::endl
-                      << "Tracker_par.txt   ! parameters (presgima) text file (if applicable)" << std::endl
+                      << "Tracker_par.txt   ! parameters (presigma) text file (if applicable)" << std::endl
                       << "Cfiles ! following bin files are Cfiles" << std::endl
                       << "Tracker_data.bin   ! binary data file" << std::endl
                       << "method inversion 5 0.001" << std::endl
@@ -223,7 +229,7 @@ G4bool PrtBarSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   float resiudalRecon = newHit->GetPos().x();
   float resolution = 0.1;
 
-  mille.mille(nalc, derlc, nagl, dergl, label, resiudalRecon, resolution);
+  mille->mille(nalc, derlc, nagl, dergl, label, resiudalRecon, resolution);
 
   fHitsCollection->insert(newHit);
 
@@ -242,3 +248,4 @@ void PrtBarSD::EndOfEvent(G4HCofThisEvent *) {
 
     mille->end();
 }
+
