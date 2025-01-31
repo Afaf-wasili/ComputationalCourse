@@ -20,7 +20,7 @@
 #include "PrtRunAction.h"
 #include "PrtManager.h"
 
-Mille* mille = new Mille("milleBinaryFile.bin", false); // Use the correct constructor
+Mille* mille = new Mille("milleBinaryFile.bin", true); // Use the correct constructor
 constexpr int misaligned_bar = 5;
 constexpr double x_shift = 0.1;
 constexpr double z_shift = 0.9;
