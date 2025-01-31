@@ -1,4 +1,3 @@
-$ cat PrtBarSD.cxx 
 #include "PrtBarSD.h"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
@@ -243,4 +242,3 @@ void PrtBarSD::EndOfEvent(G4HCofThisEvent *) {
 
     mille->end();
 }
-afafwasili@afafwasili-VirtualBox:~/nominalFEPIC/eicdirc/src$ 
