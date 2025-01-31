@@ -50,61 +50,60 @@ void PrtBarSD::Initialize(G4HCofThisEvent *hce) {
   hce->AddHitsCollection(hcID, fHitsCollection);
 }
 
-// ** Constraint File Generation **
-void PrtBarSD::write_constraint_file(std::ofstream& constraint_file, std::ofstream& debug_con, bool debugBool) {
+void PrtBarSD::write_constraint_file(ofstream& constraint_file, ofstream& debug_con, bool debugBool) {
     if (!constraint_file.is_open()) {
-        G4cerr << "Error: Constraint file not open!" << G4endl;
+        cerr << "Error: Constraint file not open!" << endl;
         return;
     }
 
-    int barN = 10;  // Total bars (0-9)
-    float one = 1.0; // Constraint weight
-    std::set<int> unique_labels; // To keep track of unique labels
+    float one = 1.0;
+    metric << " | C: ";
+    stringstream labelt;
 
-    G4cout << "Writing constraint file..." << G4endl;
-
-    // Constrain the first and last bars
-    for (int barIndex : {0, 9}) { 
-        constraint_file << "Constraint 0.0\n";
-        for (int param = 0; param < 3; param++) { // X-shift, Y-shift, X-rotation
-            int label = barIndex * 10 + param + 1;
-            if (unique_labels.insert(label).second) { // Only add if the label is unique
-                constraint_file << label << " " << std::fixed << std::setprecision(5) << one << "\n";
-                if (debugBool) {
-                    debug_con << "Fixed Bar: " << barIndex << " Label: " << label << "\n";
-                }
-            }
+    int barN = 10; // Total bars
+    int matNC = 9; // Number of non-movable bars (0-9, except 5)
+    int i_bar = 0; // Select first bar
+    for (int i_NC = 0; i_NC < matNC; i_NC++) {
+        if (i_bar == 5) {
+            i_bar++; // Skip the movable bar 5
+        }
+        constraint_file << "Constraint 0.0" << endl;
+        int labelt = i_bar + 1; // Millepede accepts +ive labels only
+        constraint_file << labelt << " " << fixed << setprecision(5) << one << endl;
+        i_bar = (i_bar + 1) % barN; // Move to the next bar
+        if (i_bar == 5) {
+            i_bar++; // Skip the movable bar 5
         }
     }
+    metric << labelt.str().c_str();
 
-    G4cout << "Constraint file written successfully." << G4endl;
+    cout << "Memory space requirement (inversion method, i.e. upper bound) = " << (matN * matN + matN) / 2 + matN * matNC + (matNC * matNC + matNC) / 2 << endl;
 }
 
-// ** Presigma File Generation **
-void PrtBarSD::write_presigma_file(std::ofstream &presigma_file, std::ofstream &metric_file) {
+void PrtBarSD::write_presigma_file(ofstream& presigma_file, ofstream& metric_file) {
     if (!presigma_file.is_open()) {
-        G4cerr << "Error: Presigma file not open!" << G4endl;
+        cerr << "Error: Presigma file not open!" << endl;
         return;
     }
 
-    presigma_file << "PARAMETERS\n";
+    presigma_file << "PARAMETERS" << endl;
     metric_file << " | P: ";
 
-    int barN = 10;
-    int misalignedBar = 5; // Only bar 5 is misaligned
-
-    for (int i = 0; i < barN; i++) {
-        for (int param = 0; param < 3; param++) { // X-shift, Y-shift, X-rotation
-            float initialValue = (i == misalignedBar) ? ((param == 0) ? -0.1 : (param == 1) ? 0.4 : 0.5) : 0.0;
-            float preSigma = (i == misalignedBar) ? 0.01 : -1.0;
-            int label = i * 10 + param + 1;
-            presigma_file << label << " " << std::fixed << std::setprecision(5) << initialValue
-                          << " " << preSigma << "\n";
-            metric_file << label << " " << initialValue << " " << preSigma << "; ";
+    int barN = 10; // Total bars
+    int ngl = 3; // Number of global parameters
+    for (int i_bar = 0; i_bar < barN; i_bar++) {
+        if (i_bar == 5) {
+            continue; // Skip the movable bar 5
+        }
+        for (int i_par = 0; i_par < ngl; i_par++) {
+            float initialValue = 0.0; // Bars at x0
+            float preSigma = -1.0;
+            int labelB = i_bar + 1; // Millepede accepts +ive labels only
+            int labelP = i_par + 1; // Millepede accepts +ive labels only
+            presigma_file << labelB << labelP << " " << fixed << setprecision(5) << initialValue << " " << preSigma << endl;
+            metric_file << labelB << labelP << " " << initialValue << " " << preSigma << "; ";
         }
     }
-
-    G4cout << "Presigma file written successfully." << G4endl;
 }
 
 // ** Steering File Generation **
@@ -248,4 +247,3 @@ void PrtBarSD::EndOfEvent(G4HCofThisEvent *) {
 
     mille->end();
 }
-
