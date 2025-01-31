@@ -1,3 +1,4 @@
+
 #include "PrtBarSD.h"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
@@ -14,236 +15,197 @@
 #include <iomanip>
 #include <set>
 
-// Include Mille header
 #include "/home/afafwasili/nominalFEPIC/MillepedeII/Mille.h"
-
 #include "PrtEvent.h"
 #include "PrtRunAction.h"
 #include "PrtManager.h"
 
-// Initialize Mille with the binary file
-static Mille* mille = new Mille("milleBinaryFile.bin");
+Mille* mille = new Mille("milleBinaryFile.bin", false); // Use the correct constructor
+constexpr int misaligned_bar = 5;
+constexpr double x_shift = 0.1;
+constexpr double z_shift = 0.9;
+constexpr double z_rotation = 0.7;
 
-// Constraints, Steering, and Parameter files are the inputs to Pede (together with binary file).
-std::ofstream constraint_file("Tracker_con.txt");
-std::ofstream presigma_file("Tracker_par.txt");
-std::ofstream metric_file("metric_log.txt");
-std::ofstream steering_file("Tracker_steering.txt");
-
-// Define the static mutex
+// Initialize static mutex
 G4Mutex PrtBarSD::fMutex = G4MUTEX_INITIALIZER;
 
-PrtBarSD::PrtBarSD(const G4String &name, const G4String &hitsCollectionName, G4int nofCells)
-  : G4VSensitiveDetector(name), fHitsCollection(NULL) {
-
-  G4AutoLock tuberier(&fMutex);
+PrtBarSD::PrtBarSD(const G4String& name, const G4String& hitsCollectionName, G4int nofCells)
+  : G4VSensitiveDetector(name) {
+  
+  G4AutoLock tuberier(&fMutex); // Lock mutex for thread safety
   collectionName.insert(hitsCollectionName);
+
+  // Open files
+  constraint_file.open("Tracker_con.txt");
+  presigma_file.open("Tracker_par.txt");
+  steering_file.open("Tracker_steering.txt");
+  metric_file.open("metric_log.txt");
+
+  // Write headers
+  constraint_file << "* Constraints\n";
+  presigma_file << "Parameter   InitialValue   PreSigma\n";
+
+  // Generate alignment files
+  write_constraint_file();
+  write_presigma_file();
+  write_steering_file();
 }
 
 PrtBarSD::~PrtBarSD() {
-  delete mille;
+ mille->end();
+delete mille;
+  
+  // Close files
+  constraint_file.close();
+  presigma_file.close();
+  steering_file.close();
+  metric_file.close();
 }
 
-void PrtBarSD::Initialize(G4HCofThisEvent *hce) {
+void PrtBarSD::Initialize(G4HCofThisEvent* hce) {
   fHitsCollection = new PrtBarHitsCollection(SensitiveDetectorName, collectionName[0]);
   G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
   hce->AddHitsCollection(hcID, fHitsCollection);
+
+  // Clear temporary hits for new event
+  fTempHits.clear();
 }
 
-void PrtBarSD::write_constraint_file(ofstream& constraint_file, ofstream& debug_con, bool debugBool) {
-    if (!constraint_file.is_open()) {
-        cerr << "Error: Constraint file not open!" << endl;
-        return;
-    }
-
-    float one = 1.0;
-    metric << " | C: ";
-    stringstream labelt;
-
-    int barN = 10; // Total bars
-    int matNC = 9; // Number of non-movable bars (0-9, except 5)
-    int i_bar = 0; // Select first bar
-    for (int i_NC = 0; i_NC < matNC; i_NC++) {
-        if (i_bar == 5) {
-            i_bar++; // Skip the movable bar 5
-        }
-        constraint_file << "Constraint 0.0" << endl;
-        int labelt = i_bar + 1; // Millepede accepts +ive labels only
-        constraint_file << labelt << " " << fixed << setprecision(5) << one << endl;
-        i_bar = (i_bar + 1) % barN; // Move to the next bar
-        if (i_bar == 5) {
-            i_bar++; // Skip the movable bar 5
-        }
-    }
-    metric << labelt.str().c_str();
-
-    cout << "Memory space requirement (inversion method, i.e. upper bound) = " << (matN * matN + matN) / 2 + matN * matNC + (matNC * matNC + matNC) / 2 << endl;
+void PrtBarSD::write_constraint_file() {
+  for(int bar_id=0; bar_id<10; bar_id++) {
+    if(bar_id == misaligned_bar) continue;
+    constraint_file << "Constraint 0.0\n";
+    constraint_file << bar_id+1 << " 1.0\n";
+  }
 }
 
-void PrtBarSD::write_presigma_file(ofstream& presigma_file, ofstream& metric_file) {
-    if (!presigma_file.is_open()) {
-        cerr << "Error: Presigma file not open!" << endl;
-        return;
+void PrtBarSD::write_presigma_file() {
+  for(int bar_id=0; bar_id<10; bar_id++) {
+    for(int param=0; param<6; param++) {
+      double presigma = -1.0;
+      if(bar_id == misaligned_bar) {
+        if(param == 0 || param == 2 || param == 5) presigma = 0.5;
+      }
+      presigma_file << bar_id*10 + param + 1 << " " 
+                   << 0.0 << " " << presigma << "\n";
     }
-
-    presigma_file << "PARAMETERS" << endl;
-    metric_file << " | P: ";
-
-    int barN = 10; // Total bars
-    int ngl = 3; // Number of global parameters
-    for (int i_bar = 0; i_bar < barN; i_bar++) {
-        if (i_bar == 5) {
-            continue; // Skip the movable bar 5
-        }
-        for (int i_par = 0; i_par < ngl; i_par++) {
-            float initialValue = 0.0; // Bars at x0
-            float preSigma = -1.0;
-            int labelB = i_bar + 1; // Millepede accepts +ive labels only
-            int labelP = i_par + 1; // Millepede accepts +ive labels only
-            presigma_file << labelB << labelP << " " << fixed << setprecision(5) << initialValue << " " << preSigma << endl;
-            metric_file << labelB << labelP << " " << initialValue << " " << preSigma << "; ";
-        }
-    }
+  }
 }
 
-// ** Steering File Generation **
-void PrtBarSD::write_steering_file(std::ofstream &steering_file, std::ofstream &metric_file) {
-    if (steering_file.is_open()) {
-        std::stringstream pede_method; 
-        pede_method.str(""); 
-        pede_method << "method inversion 5 0.001";
-        metric_file << "| " << pede_method.str().c_str();
-
-        steering_file << "* g-2 Tracker Alignment: PEDE Steering File" << std::endl
-                      << " " << std::endl
-                      << "Tracker_con.txt   ! constraints text file (if applicable) " << std::endl
-                      << "Tracker_par.txt   ! parameters (presigma) text file (if applicable)" << std::endl
-                      << "Cfiles ! following bin files are Cfiles" << std::endl
-                      << "Tracker_data.bin   ! binary data file" << std::endl
-                      << "method inversion 5 0.001" << std::endl
-                      << "printrecord 2 -1 ! produces mpdebug.txt for record 2 with the largest value of χ2/Ndf" << std::endl
-                      << " " << std::endl
-                      << "end ! optional for end-of-data" << std::endl;
-    }
+void PrtBarSD::write_steering_file() {
+  steering_file << "* g-2 Tracker Alignment\n"
+                << "method inversion 5 0.01\n"
+                << "printrecord 2\n"
+                << "Tracker_con.txt\n"
+                << "Tracker_par.txt\n"
+                << "end\n";
 }
 
-G4bool PrtBarSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
-
-  // energy deposit
-  G4Track *track = step->GetTrack();
-  int parentId = track->GetParentID();
-  if (parentId > 0) return true; // only primaries
+G4bool PrtBarSD::ProcessHits(G4Step* step, G4TouchableHistory* hist) {
+  G4Track* track = step->GetTrack();
+  if(track->GetParentID() > 0) return true; // Only primary particles
 
   G4String ParticleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
-  if (ParticleName == "opticalphoton") return true;
+  if (ParticleName == "opticalphoton") return true; // Skip optical photons
 
-  PrtBarHit *newHit = new PrtBarHit();
-  newHit->SetTrackID(step->GetTrack()->GetTrackID());
-  newHit->SetPos(step->GetPostStepPoint()->GetPosition());
+  G4StepPoint* pstep = step->GetPostStepPoint();
+  G4ThreeVector nominal_pos = pstep->GetPosition();
+  G4ThreeVector gpos = nominal_pos;
+
+  G4TouchableHistory* touchable = (G4TouchableHistory*)(pstep->GetTouchable());
+  G4int bar_id = touchable->GetCopyNumber(1); // Get the bar ID
+
+  // Apply misalignment to the specified bar
+  if(bar_id == misaligned_bar) {
+    double x = nominal_pos.x() * cos(z_rotation) - nominal_pos.y() * sin(z_rotation);
+    double y = nominal_pos.x() * sin(z_rotation) + nominal_pos.y() * cos(z_rotation);
+    gpos.setX(x + x_shift);
+    gpos.setZ(nominal_pos.z() + z_shift);
+  }
+
+  // Store hit data for regression
+  HitData hit;
+  hit.pos = gpos; // Misaligned position
+  hit.nominal_pos = nominal_pos; // Original position
+  hit.bar_id = bar_id;
+  fTempHits.push_back(hit);
+
+  // Create and store hit in collection
+  PrtBarHit* newHit = new PrtBarHit();
+  newHit->SetTrackID(track->GetTrackID());
+  newHit->SetPos(gpos);
   newHit->SetMom(track->GetMomentum());
-
-  auto pstep = step->GetPostStepPoint();
-  G4ThreeVector gpos = pstep->GetPosition();
-  G4ThreeVector gmom = pstep->GetMomentum();
-  G4TouchableHistory *touchable = (G4TouchableHistory *)(pstep->GetTouchable());
-  G4ThreeVector lpos = touchable->GetHistory()->GetTransform(1).TransformPoint(gpos);
-
-  if (fHitsCollection->entries() == 0) {
-    PrtManager::Instance()->getEvent()->setMomentumBefore(TVector3(gmom.x(), gmom.y(), gmom.z()));
-    PrtManager::Instance()->getEvent()->setPosition(TVector3(lpos.x(), lpos.y(), lpos.z()));
-  } else {    
-    PrtManager::Instance()->getEvent()->setMomentumAfter(TVector3(gmom.x(), gmom.y(), gmom.z()));
-    PrtManager::Instance()->getEvent()->setPositionAfter(TVector3(lpos.x(), lpos.y(), lpos.z()));
-  }
-
-  // Collect hits
-  static std::vector<float> zRecon;
-  static std::vector<float> xRecon;
-  static std::vector<float> yRecon;
-  zRecon.push_back(lpos.z());
-  xRecon.push_back(lpos.x());
-  yRecon.push_back(lpos.y());
-
-  if (zRecon.size() < 2) {
-    fHitsCollection->insert(newHit);
-    return true; // Not enough data points for regression yet
-  }
-
-  // Perform regression to calculate slope and intercept
-  float S = 0, Sz = 0, Su = 0, Szz = 0, Suz = 0, Sy = 0;
-  float err2 = 0.01 * 0.01;
-
-  for (size_t i = 0; i < zRecon.size(); i++) {
-      S += 1 / err2;
-      Sz += zRecon[i] / err2;
-      Su += xRecon[i] / err2;
-      Sy += yRecon[i] / err2;
-      Szz += zRecon[i] * zRecon[i] / err2;
-      Suz += xRecon[i] * zRecon[i] / err2;
-  }
-
-  float denominator = (S * Szz - Sz * Sz);
-  if (denominator == 0) {
-      G4cerr << "Error: Zero denominator in regression calculation!" << G4endl;
-      return false;
-  }
-
-  float slopeX = (S * Suz - Sz * Su) / denominator;
-  float interceptX = (Su * Szz - Sz * Suz) / denominator;
-
-  // Calculate slope and intercept for y
-  float slopeY = (S * Sy - Sz * Sy) / denominator;
-  float interceptY = (Su * Sy - Sz * Sy) / denominator;
-
-  float z = lpos.z();
-  float x = lpos.x();
-  float y = lpos.y();
-  float mX = slopeX;
-  float cX = interceptX;
-  float mY = slopeY;
-  float cY = interceptY;
-  float zc = 0;
-  float xc = 0;
-  float yc = 0;
-
-  // Labels based on hit count
-  int hitCount = fHitsCollection->entries();
-  int l1 = hitCount + 1;
-  int l2 = hitCount + 2;
-  int l3 = hitCount + 3;
-  int label[] = {l1, l2, l3};
-
-  // Local derivatives: see alignment.tex for derivations
-  float dlc1 = (cX + mX * z - x) / (sqrt(mX * mX + 1) * abs(cX + mX * z - x)); // "DCA magnitude" dR/dc
-  float dlc2 = ((mX * z - x) * abs(cX + mX * z - x)) / (pow(mX * mX + 1, 1.5) * abs(cX + mX * z - x)); // dR/dm
-  float derlc[] = {dlc1, dlc2};
-  // Global derivatives
-  float dgl1 = (cX + mX * z - x) / (sqrt(mX * mX + 1) * abs(cX + mX * z - x)); // dR/dx
-  float dgl2 = (mX * (cX + mX * z - x)) / (sqrt(mX * mX + 1) * abs(cX + mX * z - x)); // dR/dz
-  float dgl3 = ((mX * (cX + mX * z - x)) / (sqrt(mX * mX + 1) * abs(cX + mX * z - x)) * (-x + xc)) + ((cX + mX * z - x) / (sqrt(mX * mX + 1) * abs(cX + mX * z - x)) * (z - zc)); // dR/dθ
-  float dergl[] = {dgl1, dgl2, dgl3};
-
-  const int nalc = 2;
-  const int nagl = 3;
-  float resiudalRecon = newHit->GetPos().x();
-  float resolution = 0.1;
-
-  mille->mille(nalc, derlc, nagl, dergl, label, resiudalRecon, resolution);
-
   fHitsCollection->insert(newHit);
 
   return true;
 }
+void PrtBarSD::EndOfEvent(G4HCofThisEvent*) {
+  if (fTempHits.size() < 2) return; // Need at least 2 points for meaningful residuals
 
-void PrtBarSD::EndOfEvent(G4HCofThisEvent *) {
-    std::ofstream debug_con("debug_constraints.txt");
-    write_constraint_file(constraint_file, debug_con, true);
-    write_presigma_file(presigma_file, metric_file);
-    write_steering_file(steering_file, metric_file);
+  // Linear regression in X-Z plane
+  double S = 0.0, Sz = 0.0, Sx = 0.0, Szz = 0.0, Sxz = 0.0;
+  const double sigmaHit = 0.01; // Position measurement uncertainty (1 mm)
+  const double err2 = sigmaHit * sigmaHit;
 
-    zRecon.clear();
-    xRecon.clear();
-    yRecon.clear();
+  // First pass: calculate sums for regression
+  for (const auto& hit : fTempHits) {
+    const double z = hit.pos.z();
+    const double x = hit.pos.x();
+    
+    S += 1.0 / err2;
+    Sz += z / err2;
+    Sx += x / err2;
+    Szz += z*z / err2;
+    Sxz += x*z / err2;
+  }
 
-    mille->end();
+  const double denom = S * Szz - Sz * Sz;
+  if (denom == 0) return; // Avoid division by zero
+
+  // Calculate track parameters
+  const double slope = (S * Sxz - Sz * Sx) / denom;
+  const double intercept = (Sx * Szz - Sz * Sxz) / denom;
+
+  // Second pass: calculate residuals and derivatives
+  for (const auto& hit : fTempHits) {
+    const double z = hit.pos.z();
+    const double x = hit.pos.x();
+    const double residual = x - (intercept + slope * z);
+    
+    // Local derivatives (track parameters)
+    float derLc[2] = {1.0f, static_cast<float>(z)}; // d(residual)/d(intercept), d(residual)/d(slope)
+    
+    // Global derivatives (alignment parameters)
+    float derGl[3] = {
+      1.0f,                         // d(residual)/dΔx
+      -static_cast<float>(slope),   // d(residual)/dΔz (chain rule through slope)
+      -static_cast<float>(hit.nominal_pos.x()) // d(residual)/dθz (rotation)
+    };
+
+    // Parameter labels (1-based indices)
+    int labels[3] = {
+      hit.bar_id * 10 + 1,  // Δx (parameter 1 for this bar)
+      hit.bar_id * 10 + 3,  // Δz (parameter 3 for this bar)
+      hit.bar_id * 10 + 6   // θz (parameter 6 for this bar)
+    };
+
+    // Only add misaligned bar to Millepede (others are reference)
+    if (hit.bar_id == misaligned_bar) {
+      mille->mille(
+        2,        // Number of local parameters
+        derLc,    // Local derivatives array
+        3,        // Number of global parameters
+        derGl,    // Global derivatives array
+        labels,   // Global parameter labels
+        static_cast<float>(residual), 
+        static_cast<float>(sigmaHit)
+      );
+    }
+  }
+
+  fTempHits.clear(); // Clear hits for next event
+
+  // No need to manually flush - Millepede handles buffering internally
+  // Data will be written when mille->end() is called in destructor
 }
+
