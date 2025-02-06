@@ -39,8 +39,18 @@ int main(int argc, char **argv) {
     prismStepX(0), prismStepY, beamX(0), timeSigma(0.1), timeCut(0.5), testVal1(0), testVal2(0),
     testVal3(0);
   long seed = 0;
+    // Declare misalignment parameters
+    std::string barIndices = "-1";  // Default: no bars misaligned
+   std::string segmentIndices = "-1";  // Default: all segments selected
+    double rotationZ = 0.0;
+    double rotationX = 0.0;
+    double rotationY = 0.0;
+    double xShift = 0.0;
+    double yShift = 0.0;
+    double zShift = 0.0;
 
-  for (int i = 1; i < argc; i = i + 2) {
+
+     for (int i = 1; i < argc; i = i + 2) {
     if (G4String(argv[i]) == "-m") macro = argv[i + 1];
     else if (G4String(argv[i]) == "-seed") seed = atol(argv[i + 1]);
     else if (G4String(argv[i]) == "-o") outfile = argv[i + 1];
@@ -79,12 +89,19 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-d") displayOpt = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-dn") dark_noise = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-cor") correction = atoi(argv[i + 1]);
-    else {
+    else if (G4String(argv[i]) == "-bindices") barIndices = argv[i + 1];  // Parse bar indices as a comma-separated string
+     else if (G4String(argv[i]) == "-zrot")  rotationZ = atof(argv[i + 1]);
+     else if (G4String(argv[i]) == "-xrot")  rotationX = atof(argv[i + 1]);
+     else if (G4String(argv[i]) == "-yrot")  rotationY = atof(argv[i + 1]);
+   else if (G4String(argv[i]) == "-zshift")  zShift = atof(argv[i + 1]);
+    else if (G4String(argv[i]) == "-xshift")  xShift = atof(argv[i + 1]);
+   else if (G4String(argv[i]) == "-yshift")  yShift = atof(argv[i + 1]);
+   else if (G4String(argv[i]) == "-segmentindices") segmentIndices = argv[i + 1];  
+   else {
       G4cerr << "read README.md" << G4endl;
       return 1;
     }
-  }
-
+}
   // default values
   if (runtype < 2) {
     if (geometry == 0 || geometry == 10) {
@@ -220,8 +237,11 @@ int main(int argc, char **argv) {
   } else {
     runManager->SetUserInitialization(new PrtPhysicsList());
   }
+  //std::string barIndices = "5,6"; // Example indices for bars
+  // Pass barIndex to PrtDetectorConstruction
 
-  runManager->SetUserInitialization(new PrtDetectorConstruction());
+  runManager->SetUserInitialization(new PrtDetectorConstruction(barIndices, segmentIndices, rotationZ, rotationX, rotationY, zShift, xShift, yShift));
+
   runManager->SetUserInitialization(new PrtActionInitialization());
   runManager->Initialize();
 
