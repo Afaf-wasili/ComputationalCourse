@@ -111,7 +111,9 @@ class PrtReco {
   TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28], *fFindTimeA[20], *fTimeDiffR[3];
   TH1F *fTimeProp, *fTrackAngle0, *fTrackAngle1, *fTrackAngle2, *fFindTime, *fFindTimeRes;
   TH2F *fTimeDiff, *fChRing, *fdtt, *fdtl, *fdtp, *fhChromL;
-  
+TH1F* fHitXResidual;
+TH1F* fHitYResidual;
+TH1F* fHitZResidual;  
 #ifdef AI
   cppflow::model *fNNmodel;
 #endif
