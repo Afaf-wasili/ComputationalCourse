@@ -1,3 +1,4 @@
+
 #ifndef PrtDetectorConstruction_h
 #define PrtDetectorConstruction_h 1
 
@@ -7,7 +8,6 @@
 #include "G4RotationMatrix.hh"
 #include "G4VPhysicalVolume.hh"
 
-
 #include "TChain.h"
 
 #include "PrtRun.h"
@@ -16,12 +16,19 @@
 class PrtDetectorConstructionMessenger;
 
 class PrtDetectorConstruction : public G4VUserDetectorConstruction {
- public:
-  PrtDetectorConstruction();
-  virtual ~PrtDetectorConstruction();
+public:
+  // Constructor with misalignment parameters
+PrtDetectorConstruction(std::string barIndices = "-1",
+                        std::string segmentIndices = "-1",
+                        double zRotation = 0.0,
+                        double xRotation = 0.0,
+                        double yRotation = 0.0,
+                        double zShift = 0.0,
+                        double xShift = 0.0,
+                        double yShift = 0.0);
 
- public:
-  virtual G4VPhysicalVolume *Construct();
+  virtual ~PrtDetectorConstruction();
+   virtual G4VPhysicalVolume* Construct();
   virtual void ConstructSDandField();
   void DefineMaterials();
   void SetVisualization();
@@ -30,9 +37,13 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   void SetLens(G4int id);
   void SetQuantumEfficiency(G4int id);
 
- private:
+private:
+void LogMisalignments(std::ofstream& logFile, int barIndex, double xShift, double yShift,
+                      double zShift, double xRotation, double yRotation, double zRotation);
+
   PrtRun *fRun;
 
+  // Logical volumes
   G4LogicalVolume *lExpHall;
   G4LogicalVolume *lFront;
   G4LogicalVolume *lDirc;
@@ -58,16 +69,18 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4LogicalVolume *lGlueE;
   G4LogicalVolume *lBWindow, *lCookie;
 
+  // Physical volumes
   G4VPhysicalVolume *wBar;
   G4VPhysicalVolume *wTracker;
   G4VPhysicalVolume *wGlue;
   G4VPhysicalVolume *wMirror;
   G4VPhysicalVolume *wDirc;
 
+  // Materials
   G4Material *defaultMaterial; // material for bars
   G4Material *BarMaterial;     // material for bars
   G4Material *OilMaterial;
-  G4Material *MirrorMaterial; // material of mirror
+  G4Material *MirrorMaterial;  // material of mirror
   G4Material *epotekMaterial;
   G4Material *opticalCookieMaterial;
   G4Material *Nlak33aMaterial;
@@ -75,6 +88,7 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4Material *SapphireMaterial;
   G4Material *frontMaterial;
 
+  // Detector configuration parameters
   int fNRow;
   int fNCol;
   int fNBoxes;
@@ -104,10 +118,25 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   double *fQuantumEfficiency;
   int fRunType, fStudy, fTest1, fTest2, fTest3;
 
+  // Misalignment parameters
+  std::vector<int> fBarIndices;    // Bar indices for misalignment, passed as a string
+  double fRotationX;          // Rotation about X-axis
+  double fRotationY;          // Rotation about Y-axis
+  double fRotationZ;          // Rotation about Z-axis
+  double fXShift;             // Shift in X direction
+  double fYShift;             // Shift in Y direction
+  double fZShift;             // Shift in Z direction
+std::vector<int> fSegmentIndices; // List of segment indices to misalign
   G4ThreeVector fPrismShift;
 
   G4RotationMatrix *fPrtRot;
   PrtDetectorConstructionMessenger *fGeomMessenger;
+
+  // Activation flags for misalignment modes
+  bool fActivateXShift, fActivateYShift, fActivateZShift;
+  bool fActivateXRotation, fActivateYRotation, fActivateZRotation;
+
+  // Logging and other members
 };
 
 #endif
