@@ -1,4 +1,3 @@
-base) afafwasili@afafwasili-VirtualBox:~/nominalFEPIC/eicdirc/srcnew$ cat PrtBarSD.cxx 
 #include "PrtBarSD.h"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
@@ -15,7 +14,7 @@ base) afafwasili@afafwasili-VirtualBox:~/nominalFEPIC/eicdirc/srcnew$ cat PrtBar
 #include <iomanip>
 #include <set>
 
-#include "/home/afafwasili/nominalFEPIC/MillepedeII/Mille.h"
+#include "Mille.h"
 #include "PrtEvent.h"
 #include "PrtRunAction.h"
 #include "PrtManager.h"
