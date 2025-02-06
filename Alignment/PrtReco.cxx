@@ -334,8 +334,54 @@ void PrtReco::Run(int start, int end) {
 
     int pid = fEvent->getPid();    
 
+  if (!fEvent) {
+            std::cerr << "Error: fEvent is null at event " << ievent << std::endl;
+            continue;
+        }
 
-    if (ievent % 1000 == 0)
+
+
+for (auto hit : fEvent->getHits()) {
+    if (!fLut) {
+        std::cerr << "Error: fLut is null!" << std::endl;
+        return;
+    }
+
+    PrtLutNode *node = (PrtLutNode *)fLut->At(hit.getChannel());
+    if (!node) {
+        std::cerr << "Warning: node is null for channel " << hit.getChannel() << std::endl;
+        continue;
+    }
+
+    if (node->Entries() <= 0) {
+        std::cerr << "Warning: node->Entries() is empty for channel " << hit.getChannel() << std::endl;
+        continue;
+    }
+
+    TVector3 measured_pos = hit.getPosition();
+    for (int i = 0; i < node->Entries(); i++) {
+
+      double total_residual = 0.0; 
+      
+        TVector3 predicted_pos = node->GetEntry(i);
+        double residual_x = measured_pos.X() - predicted_pos.X();
+        double residual_y = measured_pos.Y() - predicted_pos.Y();
+        double residual_z = measured_pos.Z() - predicted_pos.Z();
+
+	
+        //total_residual += residual_x * residual_x + residual_y * residual_y + residual_z * residual_z;
+
+
+
+	std::cout << "Residuals -> X: " << residual_x 
+                  << " Y: " << residual_y 
+                  << " Z: " << residual_z  <<  std::endl;
+    }
+}
+
+
+
+  if (ievent % 1000 == 0)
       std::cout << "event # " << ievent << " has " << fEvent->getHits().size() << " hits"
                 << std::endl;
     double minChangle = 0.35;
@@ -808,6 +854,9 @@ void PrtReco::Run(int start, int end) {
     tree.Branch("epi_rejection1", &epi_rejection1, "epi_rejection1/D");
     tree.Branch("epi_rejection2", &epi_rejection2, "epi_rejection2/D");
     tree.Branch("epi_rejection3", &epi_rejection3, "epi_rejection3/D");
+tree.Branch("fHitXResidual", "TH1F", &fHitXResidual);
+    tree.Branch("fHitYResidual", "TH1F", &fHitYResidual);
+    tree.Branch("fHitZResidual", "TH1F", &fHitZResidual);
 
     tree.Fill();
     tree.Write();
@@ -1344,8 +1393,9 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
 	luttime = bartime + evtime;
         tdiff = hittime - luttime;
 	tangle = mom.Angle(dir);
-	
-	if(!ringfit){
+
+
+		if(!ringfit){
 	  fTimeProp->Fill(hittime);
 	  fTimeDiffR[reflected]->Fill(tdiff);
 	  if (ipath) fTimeDiffR[2]->Fill(tdiff);
