@@ -1,4 +1,5 @@
 
+
 #include "PrtDetectorConstruction.h"
 
 #include "G4Material.hh"
@@ -39,9 +40,50 @@
 #include "PrtField.h"
 #include "PrtFastSimModelTracker.h"
 
-PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction() {
 
-  fRun = PrtManager::Instance()->getRun();
+
+PrtDetectorConstruction::PrtDetectorConstruction(std::string barIndices, 
+                                                 std::string segmentIndices, 
+                                                 double zRotation, 
+                                                 double xRotation, 
+                                                 double yRotation, 
+                                                 double zShift, 
+                                                 double xShift, 
+                                                 double yShift)
+    : fRotationZ(zRotation), fRotationX(xRotation), fRotationY(yRotation), 
+      fZShift(zShift), fXShift(xShift), fYShift(yShift) {
+    // Parse bar indices
+    std::stringstream barStream(barIndices);
+    std::string barStr;
+    while (std::getline(barStream, barStr, ',')) {
+        fBarIndices.push_back(std::stoi(barStr));
+    }
+
+    // Parse segment indices
+    std::stringstream segmentStream(segmentIndices);
+    std::string segmentStr;
+    while (std::getline(segmentStream, segmentStr, ',')) {
+        fSegmentIndices.push_back(std::stoi(segmentStr));
+    }
+
+
+
+  // Parse bar indices from string (comma-separated)
+  /*   std::stringstream barStream(barIndices);
+    std::string barStr;
+    while (std::getline(barStream, barStr, ',')) {
+        try {
+            int barIdx = std::stoi(barStr);
+            fBarIndices.push_back(barIdx);
+        } catch (...) {
+            G4cerr << "Invalid bar index in input: " << barStr << ". Skipping it.\n";
+        }
+
+	
+	} */
+
+ 
+fRun = PrtManager::Instance()->getRun();
   fRunType = fRun->getRunType();
   fStudy = fRun->getStudy();
   fGeomType = fRun->getGeometry();
@@ -306,21 +348,129 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         "wGlue", lDirc, false, id);
     }
 
-    for (int i = 0; i < fNBar; i++) {
-      double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
-      for (int j = 0; j < nparts; j++) {
+   
+/* for (int i = 0; i < fNBar; ++i) {
+    double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.0;
+    for (int j = 0; j < nparts; ++j) {
         double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
-	new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false, id);
-        wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
-                                  lGlue, "wGlue", lDirc, false, id);
-        id++;
-      }
-    }
-    wTracker = new G4PVPlacement(0, G4ThreeVector(rshift - 0.5 * fBar[0] - 1, 0, 0), lTracker,
-                                 "wTracker", lDirc, false, 0);
-  }
 
-  // The Mirror
+        double effectiveXShift = 0.0;
+        double effectiveYShift = 0.0;
+        double effectiveZShift = 0.0;
+        G4RotationMatrix* misalignmentRot = nullptr;
+
+        if (std::find(fBarIndices.begin(), fBarIndices.end(), i) != fBarIndices.end()) {
+            // Apply misalignment
+            effectiveXShift = fXShift;
+            effectiveYShift = fYShift;
+            effectiveZShift = fZShift;
+
+            misalignmentRot = new G4RotationMatrix();
+            misalignmentRot->rotateX(fRotationX);
+            misalignmentRot->rotateY(fRotationY);
+            misalignmentRot->rotateZ(fRotationZ);
+
+            G4cout << "Misaligning BarIndex: " << i << "\n"
+                   << "Rotation X: " << fRotationX << " rad, Y: " << fRotationY << " rad, Z: " << fRotationZ << " rad\n"
+                   << "Shift X: " << effectiveXShift << " mm, Y: " << effectiveYShift << " mm, Z: " << effectiveZShift << " mm\n";
+
+            logFile << "BarIndex: " << i
+                    << ", XShift: " << effectiveXShift
+                    << ", YShift: " << effectiveYShift
+                    << ", ZShift: " << effectiveZShift
+                    << ", XRotation: " << fRotationX
+                    << ", YRotation: " << fRotationY
+                    << ", ZRotation: " << fRotationZ
+                    << "\n";
+        }
+
+        // Place the bar with misalignment (or default placement)
+        new G4PVPlacement(
+            misalignmentRot,
+            G4ThreeVector(rshift + effectiveXShift,
+                          shifty + effectiveYShift,
+                          z + effectiveZShift),
+            lBar, "wBar", lDirc, false, id);
+
+        // Place the glue layer
+        new G4PVPlacement(
+            nullptr,
+            G4ThreeVector(rshift + effectiveXShift,
+                          shifty + effectiveYShift,
+                          z + 0.5 * (fBar[2] + gluethickness) + effectiveZShift),
+            lGlue, "wGlue", lDirc, false, id);
+
+        id++; // Increment ID
+	//        if (misalignmentRot) delete misalignmentRot; // Clean up rotation matrix
+    }
+}
+*/
+std::ofstream logFile("placement_log.txt");  // Open the log file
+
+for (int i = 0; i < fNBar; ++i) { // Loop over all bars
+    double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.0;
+
+    for (int j = 0; j < nparts; ++j) { // Loop over all segments
+        double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
+
+        double effectiveXShift = 0.0;
+        double effectiveYShift = 0.0;
+        double effectiveZShift = 0.0;
+        G4RotationMatrix* misalignmentRot = nullptr;
+
+        if (std::find(fBarIndices.begin(), fBarIndices.end(), i) != fBarIndices.end() &&
+            (fSegmentIndices.empty() || std::find(fSegmentIndices.begin(), fSegmentIndices.end(), j) != fSegmentIndices.end())) {
+            
+            effectiveXShift = fXShift;
+            effectiveYShift = fYShift;
+            effectiveZShift = fZShift;
+
+            misalignmentRot = new G4RotationMatrix();
+            misalignmentRot->rotateX(fRotationX);
+            misalignmentRot->rotateY(fRotationY);
+            misalignmentRot->rotateZ(fRotationZ);
+
+            logFile << "Misaligning BarIndex: " << i
+                    << ", SegmentIndex: " << j
+                    << ", XShift: " << effectiveXShift
+                    << ", YShift: " << effectiveYShift
+                    << ", ZShift: " << effectiveZShift
+                    << ", XRotation: " << fRotationX
+                    << ", YRotation: " << fRotationY
+                    << ", ZRotation: " << fRotationZ
+                    << "\n";
+
+            G4cout << "Misalignment Applied to BarIndex: " << i << ", SegmentIndex: " << j << "\n";
+        }
+
+        // Place the bar
+        new G4PVPlacement(
+            misalignmentRot,
+            G4ThreeVector(rshift + effectiveXShift, shifty + effectiveYShift, z + effectiveZShift),
+            lBar, "wBar", lDirc, false, id);
+
+        // Place the glue layer
+        new G4PVPlacement(
+            nullptr,
+            G4ThreeVector(rshift + effectiveXShift, shifty + effectiveYShift,
+                          z + 0.5 * (fBar[2] + gluethickness) + effectiveZShift),
+            lGlue, "wGlue", lDirc, false, id);
+
+        id++; // Increment ID
+
+	//        if (misalignmentRot) delete misalignmentRot; // Clean up
+    }
+}
+// Place the tracker (unchanged from nominal case)
+    wTracker = new G4PVPlacement(0,
+                                 G4ThreeVector(rshift - 0.5 * fBar[0] - 1, 0, 0),
+                                 lTracker, "wTracker", lDirc, false, 0);
+
+logFile.close();
+
+  }
+    
+// The Mirror
   G4Box *gMirror = new G4Box("gMirror", fMirror[0] / 2., fMirror[1] / 2., fMirror[2] / 2.);
   lMirror = new G4LogicalVolume(gMirror, MirrorMaterial, "lMirror", 0, 0, 0);
   wMirror = new G4PVPlacement(0, G4ThreeVector(rshift, 0, -0.5 * dirclength - fMirror[2] / 2.),
