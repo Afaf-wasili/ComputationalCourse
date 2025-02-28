@@ -98,5 +98,19 @@ private:
   double fCookie[3];
   double fMcpTotal[3];
   double fMcpActive[3];
-  double fBarsGap;
+  double fBarsGap;double fRotAngle;
+  double *fQuantumEfficiency;
+  int fRunType, fStudy, fTest1, fTest2, fTest3;
+  double fRotationZ;
+  double fMisalignX;
+  double fMisalignY;
+
+  G4ThreeVector fPrismShift;
+
+  G4RotationMatrix *fPrtRot;
+  PrtDetectorConstructionMessenger *fGeomMessenger;
+};
+
+#endif
+
 
