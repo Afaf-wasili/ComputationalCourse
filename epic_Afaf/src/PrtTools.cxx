@@ -1311,15 +1311,26 @@ void PrtTools::save(TPad *c,TString path, int what, int style){
 
   gROOT->SetBatch(batch);
 }
-
 void PrtTools::print_canvas(TPad *c, TString name, TString path, int what) {
   c->Modified();
   c->Update();
+
+  // Save as PNG (this remains unchanged)
   c->Print(path + "/" + name + ".png");
+
+  // Save as ROOT file (new addition)
+  TFile rootFile(path + "/" + name + ".root", "RECREATE");
+  c->Write(name);  // Save the canvas inside the ROOT file
+  rootFile.Close();
+
+  // Save in additional formats based on 'what' parameter
   if (what > 0) c->Print(path + "/" + name + ".C");
   if (what > 1) c->Print(path + "/" + name + ".pdf");
   if (what > 2) c->Print(path + "/" + name + ".eps");
+
+  std::cout << "Saved: " << path + "/" + name + ".png and .root" << std::endl;
 }
+
 
 TString PrtTools::dir(TString path) {
   return path.Remove(path.Last('/'));
@@ -1377,3 +1388,5 @@ int PrtTools::get_pid(int pdg) {
   if (pdg == 2212) pid = 4; // p
   return pid;
 }
+
+
