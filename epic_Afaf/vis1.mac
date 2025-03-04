@@ -37,8 +37,9 @@
 /vis/viewer/zoomTo 6
 /vis/viewer/set/targetPoint 0.8 0 2.3 m
 
-# Hide bars (lBar)
+# Hide bars (lBar) but KEEP the prism (lPrizm)
 /vis/geometry/set/visibility lBar 0 false
+/vis/geometry/set/visibility lPrizm 1 true
 
 # Optional: Adjust transparency for better visibility
 #/vis/geometry/set/colour lBar 1 0 1 0.3  # Set bars to be semi-transparent if needed
