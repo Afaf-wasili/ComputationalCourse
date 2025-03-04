@@ -1,0 +1,47 @@
+# Use this open statement to create an OpenGL view:
+/vis/open OGLS
+
+# Disable auto refresh and quieten vis messages whilst scene and trajectories are established:
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+
+# Draw geometry:
+/vis/drawVolume
+
+# Specify zoom value:
+/vis/viewer/zoom 1.5
+
+# Draw coordinate axes:
+#/vis/scene/add/axes 0.7705 0 -1.82 0.01 m auto false
+
+# Draw smooth trajectories at end of event:
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
+/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.8 0 0.3
+/vis/modeling/trajectories/drawByParticleID-0/setRGBA e+ 1 0 1 1
+/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 2
+
+# Superimpose all events from a given run:
+/vis/scene/endOfEventAction accumulate
+
+# Re-establish auto refreshing and verbosity:
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+
+# Set Z-direction visualization
+/vis/viewer/set/viewpointVector 1 0 0
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection orthogonal
+/vis/viewer/zoomTo 6
+/vis/viewer/set/targetPoint 0.8 0 2.3 m
+
+# Hide bars (lBar)
+/vis/geometry/set/visibility lBar 0 false
+
+# Optional: Adjust transparency for better visibility
+#/vis/geometry/set/colour lBar 1 0 1 0.3  # Set bars to be semi-transparent if needed
+
+# Export visualization if needed
+#/vis/ogl/export ev_1.svg 1000 1000
