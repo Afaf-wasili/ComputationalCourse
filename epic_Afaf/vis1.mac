@@ -12,7 +12,7 @@
 /vis/viewer/zoom 1.5
 
 # Draw coordinate axes:
-#/vis/scene/add/axes 0.7705 0 -1.82 0.01 m auto false
+/vis/scene/add/axes 0.7705 0 -1.82 0.01 m auto false
 
 # Draw smooth trajectories at end of event:
 /vis/scene/add/trajectories smooth
@@ -37,12 +37,12 @@
 /vis/viewer/zoomTo 6
 /vis/viewer/set/targetPoint 0.8 0 2.3 m
 
-# Hide bars (lBar) but KEEP the prism (lPrizm)
-/vis/geometry/set/visibility lBar 0 false
+# Hide only radiator bars (lRadBar) but KEEP the prism (lPrizm) and other elements visible
+/vis/geometry/set/visibility lRadBar 0 false
 /vis/geometry/set/visibility lPrizm 1 true
 
 # Optional: Adjust transparency for better visibility
-#/vis/geometry/set/colour lBar 1 0 1 0.3  # Set bars to be semi-transparent if needed
+#/vis/geometry/set/colour lRadBar 1 0 1 0.3  # Set radiator bars to be semi-transparent if needed
 
 # Export visualization if needed
 #/vis/ogl/export ev_1.svg 1000 1000
