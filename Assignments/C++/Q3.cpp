@@ -1,5 +1,5 @@
-'''
-Q3: Write a Python script that uses the math library to perform the following calculations:
+/*
+Q3: Write a C++ script that uses the math library to perform the following calculations:
 
 1. Calculate the Area of a Circle:
 
@@ -15,6 +15,7 @@ B. Use the circle_area and sphere_volume functions to calculate the area and vol
 C. Print the results with appropriate labels.
 
 Ensure that the script correctly performs these calculations and handles user input.
-'''
 
+
+  */
 
