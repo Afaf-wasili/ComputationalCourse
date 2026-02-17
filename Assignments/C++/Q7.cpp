@@ -1,5 +1,5 @@
-'''
-Write a Python script that performs the following tasks:
+/*
+Write a C++ script that performs the following tasks:
 
 1. Create Data:
 
@@ -14,4 +14,4 @@ Write a function named save_to_file(data, filename) that takes a list of strings
 Use the save_to_file(data, "fruits.txt") function to save the list of strings to a text file named "fruits.txt".
 Ensure that the script creates the file and writes the strings correctly.
 
-'''
+*/
