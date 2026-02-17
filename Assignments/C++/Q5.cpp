@@ -1,5 +1,5 @@
-'''
-Write a Python script that takes an integer input from the user and checks the following conditions:
+/*
+Write a C++ script that takes an integer input from the user and checks the following conditions:
 
 1. If the number is positive and even, print "The number is positive and even."
 2. If the number is positive and odd, print "The number is positive and odd."
@@ -9,4 +9,4 @@ Write a Python script that takes an integer input from the user and checks the f
 
 Ensure that your script correctly handles each condition using if, elif, and else statements.
 
-'''
+*/
