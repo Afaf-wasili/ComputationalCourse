@@ -1,22 +1,22 @@
-class Rectangle {
+//class: many functions
+//define the rectangle
+class Rectangle{ // name of the class
 
-private:
-    double length; // Length of the rectangle                                                                            
-    double width;  // Width of the rectangle                                                                             
+private: //varaibles
+  double length;
+  double width;
 
-public:
-    // Constructor to initialize a Rectangle object with length and width                                                
-    Rectangle(double x, double y) : length(x), width(y) {}
 
-    // Method to calculate and return the area of the rectangle                                                          
-    double get_area() {
-        return length * width; // Area is calculated as length times width                                               
-    }
+public: //initialize a rectangle class
+  Rectangle(double x, double y): length(x), width(y) {}
 
-    // Method to calculate and return the perimeter of the rectangle                                                     
-     double get_perimeter() {
-     return 2 * (length + width); // Correct formula for perimeter                                                       
- }
+  //first function definition
+  double get_area(){
+    return length * width;
+  }
+
+  //second function definition
+  double get_perimeter(){
+    return 2 * (length+ width);
+  }
 };
-
-

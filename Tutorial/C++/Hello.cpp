@@ -1,8 +1,20 @@
-//void Hello() {
-std::cout<<" Hello, world!"<<std::endl;
+/*
+void Hello(){
 
-//}
+std::cout<<"Hello World!"<<std::endl;
 
-//compiling as root -l Hello.cpp
-//.L Hello.cpp 
+}
+*/
 
+void test(){
+   
+  std::cout<<"Hello World!"<<std::endl;
+  
+}
+
+
+//running:
+//root -l Hello.cpp
+//.L Hello.cpp
+//test()
+//.q

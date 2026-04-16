@@ -1,31 +1,28 @@
 //first version: it prints the result directly
-
+/*
 void Functions(){
   double principle = 1200.0;
   double rate = 8.0;   
   double time = 1.0;
-  //  double result_si;
+  double result_si;
 
-  //result_si =
+  result_si = (principle * rate * time) / 100;  
 
-    (principle * rate * time) / 100;  
-
-    //std::cout<<"result si = " << result_si <<std::endl;
-    std::cout<<"result si = "<<(principle * rate * time) / 100 <<std::endl;
+  std::cout<<"result si = " << result_si <<std::endl;
 }
-
+*/
 
 
 
 
 //second version:  void, int:return: instead of fixing values inside the void function, then call them in int function
-
+/*
 void Funtions( double principle, double rate, double time){
   
   //equation?
   double result_si = (principle * rate * time) / 100;
   //print?
-  //   std::cout<<"result si = " << result_si <<std::endl;
+   std::cout<<"result si = " << result_si <<std::endl;
 }
 
 int Functions(){
@@ -33,10 +30,11 @@ int Functions(){
   Funtions(1200.0, 8.0,1.0);
   return 0;
 }
+*/
 
 
-//third function: double:return , int:return : instead of printing inside the first function, it returns the equation
-/*
+//third function: double, int
+
 double Functions(double principle, double rate, double time){
 
   return (principle * rate * time) / 100;
@@ -46,10 +44,8 @@ double Functions(double principle, double rate, double time){
 int Functions(){
   //call
    Functions(1200.0, 8.0,1.0);
-   //print?
-   std::cout<<"result si = " << Functions(1200.0, 8.0,1.0)<<std::endl;
+    double results = Functions(1200.0, 8.0,1.0);
+   std::cout<<"result si = " <<  results <<std::endl;
    return 0;
 }
 
-
-*/

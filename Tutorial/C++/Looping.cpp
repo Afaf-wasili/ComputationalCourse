@@ -1,45 +1,63 @@
 /*
-void Looping(){
-  std::vector<int> n = {1,2,3,4};
-  int sum = 0;
-  //loop
-  int i = 0;
-  while ( i < n.size()){
-    sum += n[i];
-    i += 1;
-  }
-  std::cout << "The total is " << sum << std::endl;
-
-}
+for looping: read data from 0, ....
+While looping: read the total of data
 */
+
+
 /*
 void Looping(){
-  std::vector<int> n = {2,3,4,5};
-        
-  for (int i : n){
-  std:cout<< i<< std::endl;}
-    
+  for(int i = 0; i < 11; i+=1){   //start, end, steps
+    std::cout<< "i=" << i <<std::endl;
+  }
 }
 */
 
+
+/*
+
 void Looping(){
-  std::vector<int> n = {1,2,3,4,5,6,7,8};
-  int sum_even=0;
-  int sum_odd=0;
-  int count_even=0;
-  int count_odd=0;
-    for (int i : n){
-      if (i % 2 == 0){
-	sum_even +=i;
-	count_even +=1;}
-      else{
-	sum_odd +=i;
-        count_odd +=1;}} 
+  std::vector<int> n = {0,1,2,3,4,5,6,7,8,9,10};
+
+  for (int i: n){
+
+ std::cout<< "i=" << i <<std::endl;
+}}
+
+*/
 
 
-       std::cout<<"the total number of even: "<<sum_even<<std::endl;
-       std::cout<<"how many even numbers: "<<count_even<<std::endl;
-       std::cout<<"the total number of odd : "<<sum_odd<<std::endl;
-       std::cout<<"how many odd numbers: "<<count_odd<<std::endl;
+void Looping(){
+    int sum_even = 0;
+    int sum_odd = 0;
+    int count_even = 0;
+    int count_odd =0 ;
+  for(int i =0; i<11; i+=1){
+    if(i % 2 == 0){
+      sum_even +=i;
+      count_even +=1;}
+
+    else if (i % 2 ==1){
+      sum_odd +=i;
+      count_odd +=1;
     }
 
+  }
+      std::cout<<" sum_even ="<<  sum_even<<std::endl;
+      std::cout<< "count_even ="<< count_even<<std::endl;
+      std::cout<< "sum_odd = "<<sum_odd<<std::endl; 
+      std::cout<< "count_even =" <<count_even<<std::endl;
+}
+
+
+/*
+void Looping(){ //while: count of data only
+  std::vector<int> n = {2,3,4,5,6,7,8};
+  int count;
+  int i =0;
+  while(i < n.size()){
+    count += n[i];
+      i += 1;
+  }
+  std::cout<<"i="<<i<<std::endl;
+}
+*/

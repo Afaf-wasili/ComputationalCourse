@@ -1,45 +1,43 @@
-#include "Statements.h"
+//else is follwoing if, else if  
+ 
+
+// ex: if conditional statement
 /*
 void Statements(){
-int number = 5;  // Initialize the number variable
-
-    if (number < 0) {
-        std::cout << "The negative number is " << number << std::endl;
-    }
-    if (number == 5) {
-        std::cout << "The number is equal to: " << number << std::endl;
-    }
-    if (number > 0) {
-        std::cout << "The positive number is " << number << std::endl;
-    }
+  int num =  5;
+  if(num != 5){
+    std::cout<<"the number is equal to "<< num <<std::endl;
+  }else{
+    std::cout<<"otherwise"<<std::endl;
+  }
 
 }
-
 */
+
 /*
-void Statements(){ 
-int number = 4;  // Initialize the number variable
-    int result = number % 2;  // Calculate the remainder of number divided by 2
+void Statements(){
+  int num = 5 ;
+  int result =  num %  2; // equation is to check if num is even or not
 
-    if (result == 0) {  // Check if the number is even
-        std::cout << "result = " << result << ", the number is even: " << number << std::endl;
-    } else {  // If the number is odd
-        std::cout << "result = " << result << ", the number is odd: " << number << std::endl;
-    }
-
+  if (result ==0){
+    std::cout<<" the number is even: result= " <<result<<std::endl;
+  }else{
+    std::cout<<"otherwise: "<<result<<std::endl;
+  }
 }
 */
 
 
 void Statements(){
-  //  int x = 4;  // Initialize x
-  //  int y = 4;  // Initialize y
+  int x = 4;
+  int y = 2;
 
-    if (x < y) {
-        std::cout << x << " is less than " << y << std::endl;
-    } else if (x > y) {
-        std::cout << x << " is greater than " << y << std::endl;
-    } else {
-        std::cout << x << " and " << y << " are equal" << std::endl;
-    }
+  if(x < y){
+    std::cout<<"x is less than y"<<std::endl; 
+  } else if (x > y){
+    std::cout<<"x is greater than y"<<std::endl;
+  }else{
+    std::cout<<"otherwise"<<std::endl;}
 }
+
+
