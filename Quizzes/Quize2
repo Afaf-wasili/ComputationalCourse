@@ -1,0 +1,106 @@
+
+void fill2DHistogramsigbk() {
+
+    // Open the ROOT file
+
+    TFile *file = TFile::Open("mlpHiggs.root");
+
+
+    // =========================
+    // GET TREES
+    // =========================
+
+    TTree *sig_tree =
+    (TTree*)file->Get("sig_filtered");
+
+
+    // Q1 [1 Point]
+    //
+    // Complete the command to retrieve
+    // the background tree
+
+    TTree *bg_tree =
+    __________________________;
+
+
+
+
+    // Q2 [2 Points]
+    //
+    // Define variables and apply
+    // SetBranchAddress()
+    // for acolin in signal and background
+
+    __________________________;
+
+    __________________________;
+
+    __________________________;
+
+    __________________________;
+
+
+
+    // Q3 [1 Point]
+    //
+    // Complete the TH2F constructor:
+    //
+    // X-axis = Background
+    // Y-axis = Signal
+
+    TH2F *hist_2d = new TH2F(
+    __________________________);
+
+
+
+    // Fill histogram
+
+    for (int j=0;
+         j<bg_tree->GetEntries();
+         ++j) {
+
+        bg_tree->GetEntry(j);
+
+        for (int i=0;
+             i<sig_tree->GetEntries();
+             ++i) {
+
+            sig_tree->GetEntry(i);
+
+            hist_2d->Fill(
+            bg_acolin,
+            sig_acolin);
+
+        }
+    }
+
+
+
+    TCanvas *c =
+    new TCanvas(
+    "c",
+    "Background vs Signal",
+    800,
+    600);
+
+
+    // Q4 [1 Point]
+    //
+    // Draw the histogram
+    // using color representation
+
+    __________________________;
+
+
+
+    // Q5 [1 Point]
+    //
+    // Save the histogram
+    // as PNG format
+
+    __________________________;
+
+
+    file->Close();
+
+}
